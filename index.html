@@ -62,7 +62,7 @@
         }
         
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #fff;
         }
         
         tr:hover {
@@ -241,7 +241,7 @@
 
         <!-- Form Preview -->
         <div id="printArea">
-            <h1>FORM ORDER KERJA</h1>
+           
             
             <div class="table-title"></div>
             <table class="header-table">
@@ -574,7 +574,7 @@
         function printForm() {
             const printStyle = document.createElement('style');
             printStyle.textContent = `
-                @page { size: A4; margin: 20mm; }
+                @page { size: A4; margin: 10mm; }
                 @media print {
                     body { margin: 0; padding: 0; background: white; }
                     .container { box-shadow: none; max-width: none; margin: 0; padding: 0; }
