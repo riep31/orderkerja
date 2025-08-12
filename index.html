@@ -286,7 +286,7 @@
                     </tr>
                     <tr>
                         <td>Tanggal Terbit</td>
-                        <td id="tanggalTerbit">-</td>
+                        <td id="tanggalTerbit">10 Maret 2021</td>
                     </tr>
                     <tr>
                         <td>Halaman</td>
@@ -418,11 +418,11 @@
                 </tbody>
             </table>
 
-            <div class="table-title">Image Rincian Pekerjaan</div>
+            <div class="table-title">Foto Rincian Pekerjaan</div>
             <table class="body-table">
                 <tbody>
                     <tr>
-                        <td class="field-name">Image URL</td>
+                        <td class="field-name">Foto Rincian Pekerjaan</td>
                         <td id="imageRincianPekerjaan" class="image-container">
                             <div class="no-image-text">Tidak ada gambar</div>
                         </td>
@@ -637,6 +637,30 @@
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('printArea');
             
+            // Buat styling khusus untuk PDF export
+            const pdfStyle = document.createElement('style');
+            pdfStyle.id = 'pdf-export-style';
+            pdfStyle.textContent = `
+                .header-table th, .header-table td {
+                    background-color: #ffffff !important;
+                    color: #000000 !important;
+                    border: 1px solid #000000 !important;
+                }
+                .body-table th, .body-table td {
+                    border: 1px solid #000000 !important;
+                }
+                .field-name {
+                    background-color: #e8f5e8 !important;
+                    border: 1px solid #000000 !important;
+                }
+                th {
+                    background-color: #4CAF50 !important;
+                    color: white !important;
+                    border: 1px solid #000000 !important;
+                }
+            `;
+            document.head.appendChild(pdfStyle);
+            
             html2canvas(element, {
                 scale: 2,
                 useCORS: true,
@@ -646,19 +670,22 @@
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 
-                const imgWidth = 210;
-                const pageHeight = 295;
+                // Margin 10px = 3.78mm (konversi px ke mm: 1px = 0.378mm)
+                const margin = 3.78;
+                const imgWidth = 210 - (margin * 2); // A4 width minus margins
+                const pageHeight = 297 - (margin * 2); // A4 height minus margins
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 let heightLeft = imgHeight;
-                let position = 0;
+                let position = margin;
 
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                // Add first image with margin
+                pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
 
                 while (heightLeft >= 0) {
-                    position = heightLeft - imgHeight;
+                    position = heightLeft - imgHeight + margin;
                     pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
                     heightLeft -= pageHeight;
                 }
                 
@@ -667,9 +694,18 @@
                 const fileName = `Form_Order_Kerja_${noOK}_${department.replace(/\s+/g, '_')}.pdf`;
                 
                 pdf.save(fileName);
+                
+                // Remove temporary style
+                document.head.removeChild(pdfStyle);
             }).catch(function(error) {
                 console.error('Error generating PDF:', error);
                 alert('Terjadi kesalahan saat membuat PDF. Silakan coba lagi.');
+                
+                // Remove temporary style in case of error
+                const tempStyle = document.getElementById('pdf-export-style');
+                if (tempStyle) {
+                    document.head.removeChild(tempStyle);
+                }
             });
         }
 
