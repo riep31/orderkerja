@@ -286,7 +286,7 @@
                     </tr>
                     <tr>
                         <td>Tanggal Terbit</td>
-                        <td id="tanggalTerbit">10 Maret 2021</td>
+                        <td id="tanggalTerbit">-</td>
                     </tr>
                     <tr>
                         <td>Halaman</td>
@@ -358,7 +358,7 @@
                 <tbody>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" id="check1" style="width: 18px; height: 18px;">
+                            <input type="checkbox" id="check1" style="width: 18px; height: 18px;" disabled>
                         </td>
                         <td>
                             <label for="check1" style="cursor: pointer; font-weight: normal;" id="checkLabel1">Cek kebersihan mesin dan area mesin oleh QC</label>
@@ -366,7 +366,7 @@
                     </tr>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" id="check2" style="width: 18px; height: 18px;">
+                            <input type="checkbox" id="check2" style="width: 18px; height: 18px;" disabled>
                         </td>
                         <td>
                             <label for="check2" style="cursor: pointer; font-weight: normal;" id="checkLabel2">Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi</label>
@@ -374,7 +374,7 @@
                     </tr>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" id="check3" style="width: 18px; height: 18px;">
+                            <input type="checkbox" id="check3" style="width: 18px; height: 18px;" disabled>
                         </td>
                         <td>
                             <label for="check3" style="cursor: pointer; font-weight: normal;" id="checkLabel3">Serah terima mesin oleh teknisi kepada operator produksi</label>
@@ -418,11 +418,11 @@
                 </tbody>
             </table>
 
-            <div class="table-title">Foto Rincian Pekerjaan</div>
+            <div class="table-title">Image Rincian Pekerjaan</div>
             <table class="body-table">
                 <tbody>
                     <tr>
-                        <td class="field-name">Foto Rincian Pekerjaan</td>
+                        <td class="field-name">Image URL</td>
                         <td id="imageRincianPekerjaan" class="image-container">
                             <div class="no-image-text">Tidak ada gambar</div>
                         </td>
@@ -505,6 +505,38 @@
             }
         }
 
+        // Fungsi untuk mengatur status checkbox berdasarkan parameter URL
+        function setCheckboxStates() {
+            // Ambil nilai checkbox dari URL parameters dengan nama kolom yang lebih deskriptif
+            const check1Value = getUrlParameter('Cek kebersihan mesin dan area mesin oleh QC') || '';
+            const check2Value = getUrlParameter('Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi') || '';
+            const check3Value = getUrlParameter('Serah terima mesin oleh teknisi kepada operator produksi') || '';
+            
+            // Set checkbox 1
+            const checkbox1 = document.getElementById('check1');
+            if (check1Value.toLowerCase() === 'ya' || check1Value.toLowerCase() === 'yes' || check1Value === '1' || check1Value.toLowerCase() === 'true') {
+                checkbox1.checked = true;
+            } else {
+                checkbox1.checked = false;
+            }
+            
+            // Set checkbox 2
+            const checkbox2 = document.getElementById('check2');
+            if (check2Value.toLowerCase() === 'ya' || check2Value.toLowerCase() === 'yes' || check2Value === '1' || check2Value.toLowerCase() === 'true') {
+                checkbox2.checked = true;
+            } else {
+                checkbox2.checked = false;
+            }
+            
+            // Set checkbox 3
+            const checkbox3 = document.getElementById('check3');
+            if (check3Value.toLowerCase() === 'ya' || check3Value.toLowerCase() === 'yes' || check3Value === '1' || check3Value.toLowerCase() === 'true') {
+                checkbox3.checked = true;
+            } else {
+                checkbox3.checked = false;
+            }
+        }
+
         // Fungsi load data dari URL
         function loadDataFromUrl() {
             // Header Document Info
@@ -535,10 +567,14 @@
             // Load image from URL parameter
             loadImageFromUrl();
 
-            // Checklist Labels
-            document.getElementById('checkLabel1').textContent = getUrlParameter('checkLabel1') || 'Cek kebersihan mesin dan area mesin oleh QC';
-            document.getElementById('checkLabel2').textContent = getUrlParameter('checkLabel2') || 'Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi';
-            document.getElementById('checkLabel3').textContent = getUrlParameter('checkLabel3') || 'Serah terima mesin oleh teknisi kepada operator produksi';
+            // Set checkbox states
+            setCheckboxStates();
+
+            // Checkbox labels tidak perlu diupdate lagi karena sudah fixed di HTML
+            // Jika ingin dynamic labels, uncomment baris berikut:
+            // document.getElementById('checkLabel1').textContent = getUrlParameter('checkLabel1') || 'Cek kebersihan mesin dan area mesin oleh QC';
+            // document.getElementById('checkLabel2').textContent = getUrlParameter('checkLabel2') || 'Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi';
+            // document.getElementById('checkLabel3').textContent = getUrlParameter('checkLabel3') || 'Serah terima mesin oleh teknisi kepada operator produksi';
 
             // Signature Section
             const diterima = getUrlParameter('diterima') || '-';
@@ -644,19 +680,19 @@
                 .header-table th, .header-table td {
                     background-color: #ffffff !important;
                     color: #000000 !important;
-                    border: 1px solid #000000 !important;
+                    border: 2px solid #000000 !important;
                 }
                 .body-table th, .body-table td {
-                    border: 1px solid #000000 !important;
+                    border: 2px solid #000000 !important;
                 }
                 .field-name {
                     background-color: #e8f5e8 !important;
-                    border: 1px solid #000000 !important;
+                    border: 2px solid #000000 !important;
                 }
                 th {
                     background-color: #4CAF50 !important;
                     color: white !important;
-                    border: 1px solid #000000 !important;
+                    border: 2px solid #000000 !important;
                 }
             `;
             document.head.appendChild(pdfStyle);
