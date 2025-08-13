@@ -250,7 +250,7 @@
             
             @page {
                 size: A4;
-                margin: 10mm;
+                margin: 5mm;
             }
         }
 
@@ -695,19 +695,19 @@
                 .header-table th, .header-table td {
                     background-color: #ffffff !important;
                     color: #000000 !important;
-                    border: 2px solid #000000 !important;
+                    border: 1px solid #000000 !important;
                 }
                 .body-table th, .body-table td {
-                    border: 2px solid #000000 !important;
+                    border: 1px solid #000000 !important;
                 }
                 .field-name {
                     background-color: #e8f5e8 !important;
-                    border: 2px solid #000000 !important;
+                    border: 1px solid #000000 !important;
                 }
                 th {
                     background-color: #4CAF50 !important;
                     color: white !important;
-                    border: 2px solid #000000 !important;
+                    border: 1px solid #000000 !important;
                 }
                 /* Disable striping for PDF export */
                 .body-table tr:nth-child(even),
@@ -727,7 +727,7 @@
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 
                 // Margin 10px = 3.78mm (konversi px ke mm: 1px = 0.378mm)
-                const margin = 3.78;
+                const margin = 1.89;
                 const imgWidth = 210 - (margin * 2); // A4 width minus margins
                 const pageHeight = 297 - (margin * 2); // A4 height minus margins
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
