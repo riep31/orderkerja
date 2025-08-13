@@ -23,7 +23,7 @@
             max-width: 1200px;
             margin: 0 auto;
             background-color: white;
-            padding: 20px;
+            padding: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
@@ -37,7 +37,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             table-layout: fixed;
         }
         
@@ -61,19 +61,22 @@
             background-color: #fff;
         }
         
-        tr:nth-child(even) {
-            background-color: #fff;
+        /* Striping untuk body-table dan footer-table */
+        .body-table tr:nth-child(even),
+        .footer-table tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
         
-        tr:hover {
+        .body-table tr:hover,
+        .footer-table tr:hover {
             background-color: #f5f5f5;
         }
         
         .table-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #333;
-            margin: 20px 0 10px 0;
+            margin: 10px 0 10px 0;
         }
         
         .field-name {
@@ -96,7 +99,7 @@
         
         .company-name {
             text-align: center;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: #000;
             margin: 10px 0;
@@ -238,6 +241,13 @@
             .buttons, .info-section {
                 display: none;
             }
+            
+            /* Disable striping for print */
+            .body-table tr:nth-child(even),
+            .footer-table tr:nth-child(even) {
+                background-color: white !important;
+            }
+            
             @page {
                 size: A4;
                 margin: 10mm;
@@ -267,10 +277,10 @@
                 <tbody>
                     <tr>
                         <td rowspan="5" style="text-align: center; vertical-align: middle;">
-                             <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYyanHkNjy-MEGWx-yRWA8XiFF9HbWiLoGFY9HRkEpuBXKYGjxU_TMW2dK4ONcqKA4tg&usqp=CAU' width='120' height='80' style='margin-right: 15px; padding: 1px;'>
+                             <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYyanHkNjy-MEGWx-yRWA8XiFF9HbWiLoGFY9HRkEpuBXKYGjxU_TMW2dK4ONcqKA4tg&usqp=CAU' width='100' height='60' style='margin-right: 15px; padding: 1px;'>
                              <div class="company-name">PT.DAGSAP ENDURA EATORE</div>
                         </td>
-                        <td rowspan="5" style="text-align: center; vertical-align: middle; font-size: 30px; font-weight: bold; color: #333;">
+                        <td rowspan="5" style="text-align: center; vertical-align: middle; font-size: 25px; font-weight: bold; color: #333;">
                             FORM ORDER KERJA (OK)
                         </td>
                         <td>Nomor Dokumen</td>
@@ -286,7 +296,7 @@
                     </tr>
                     <tr>
                         <td>Tanggal Terbit</td>
-                        <td id="tanggalTerbit">-</td>
+                        <td id="tanggalTerbit">10 Maret 2021</td>
                     </tr>
                     <tr>
                         <td>Halaman</td>
@@ -418,11 +428,11 @@
                 </tbody>
             </table>
 
-            <div class="table-title">Image Rincian Pekerjaan</div>
+            <div class="table-title">Foto Rincian Pekerjaan</div>
             <table class="body-table">
                 <tbody>
                     <tr>
-                        <td class="field-name">Image URL</td>
+                        <td class="field-name">Foto:</td>
                         <td id="imageRincianPekerjaan" class="image-container">
                             <div class="no-image-text">Tidak ada gambar</div>
                         </td>
@@ -543,7 +553,7 @@
             document.getElementById('nomorDokumen').textContent = getUrlParameter('nomorDokumen') || 'DEE-YG-SX-XX-003-13';
             document.getElementById('statusDokumen').textContent = getUrlParameter('statusDokumen') || 'Dikendalikan';
             document.getElementById('revisi').textContent = getUrlParameter('revisi') || '02';
-            document.getElementById('tanggalTerbit').textContent = formatDate(getUrlParameter('tanggalTerbit')) || formatDate(new Date().toISOString());
+            document.getElementById('tanggalTerbit').textContent = getUrlParameter('tanggalTerbit') || '10 Maret 2021';
             document.getElementById('halaman').textContent = getUrlParameter('halaman') || '1 dari 1';
 
             // Body Information
@@ -625,6 +635,7 @@
                         .status-pending { color: #dc3545; font-weight: bold; }
                         .image-container { text-align: center; }
                         .image-container img { max-width: 100%; max-height: 300px; }
+                        .body-table tr:nth-child(even) { background-color: #f9f9f9; }
                     </style>
                 </head>
                 <body>
@@ -661,6 +672,10 @@
                     body { margin: 5; padding: 0; background: white; }
                     .container { box-shadow: none; max-width: none; margin: 0; padding: 0; }
                     .buttons, .info-section { display: none; }
+                    .body-table tr:nth-child(even),
+                    .footer-table tr:nth-child(even) {
+                        background-color: white !important;
+                    }
                 }
             `;
             document.head.appendChild(printStyle);
@@ -693,6 +708,11 @@
                     background-color: #4CAF50 !important;
                     color: white !important;
                     border: 2px solid #000000 !important;
+                }
+                /* Disable striping for PDF export */
+                .body-table tr:nth-child(even),
+                .footer-table tr:nth-child(even) {
+                    background-color: white !important;
                 }
             `;
             document.head.appendChild(pdfStyle);
