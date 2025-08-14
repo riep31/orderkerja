@@ -226,6 +226,74 @@
             padding: 40px 20px;
         }
 
+        .image-debug {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .image-debug-title {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .image-debug-url {
+            background-color: #e9ecef;
+            padding: 8px;
+            border-radius: 3px;
+            word-break: break-all;
+            font-family: monospace;
+            margin: 5px 0;
+        }
+
+        .image-status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .image-status.loading {
+            background-color: #cce7ff;
+            color: #0066cc;
+            border: 1px solid #99d6ff;
+        }
+
+        .image-status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .image-status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .try-direct-link {
+            background-color: #17a2b8;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .try-direct-link:hover {
+            background-color: #138496;
+            color: white;
+        }
+
         @media print {
             body {
                 background-color: white;
@@ -238,7 +306,7 @@
                 margin: 0;
                 padding: 0;
             }
-            .buttons, .info-section {
+            .buttons, .info-section, .image-debug, .image-status {
                 display: none;
             }
             
@@ -490,96 +558,175 @@
             return `https://api.qrserver.com/v1/create-qr-code/?data=${encodedData}&size=50x50`;
         }
 
-        // Fungsi untuk menampilkan gambar dari URL parameter
+        // Fungsi untuk mengecek apakah URL adalah AppSheet image URL
+        function isAppSheetImageUrl(url) {
+            return url && url.includes('appsheet.com/image/getimageurl');
+        }
+
+        // Fungsi untuk membuat proxy URL atau alternative URL untuk AppSheet images
+        function getAppSheetImageAlternatives(originalUrl) {
+            const alternatives = [];
+            
+            // Decode URL terlebih dahulu
+            let decodedUrl = decodeURIComponent(originalUrl);
+            
+            // Coba berbagai variasi URL
+            alternatives.push(originalUrl); // Original
+            alternatives.push(decodedUrl); // Decoded
+            
+            // Coba dengan mengganti protocol ke https
+            if (decodedUrl.startsWith('http:')) {
+                alternatives.push(decodedUrl.replace('http:', 'https:'));
+            }
+            
+            // Untuk AppSheet, coba ekstrak parameter dan buat URL alternatif
+            if (isAppSheetImageUrl(decodedUrl)) {
+                try {
+                    const urlObj = new URL(decodedUrl);
+                    const params = urlObj.searchParams;
+                    const fileName = params.get('fileName');
+                    const appName = params.get('appName');
+                    const tableName = params.get('tableName');
+                    
+                    if (fileName && appName) {
+                        // Coba beberapa format URL alternatif untuk AppSheet
+                        alternatives.push(`https://www.appsheet.com/api/v2/apps/${appName}/tables/${tableName}/attachments/${fileName}`);
+                        alternatives.push(`https://${appName}.appsheet.com/image/${fileName}`);
+                    }
+                } catch (e) {
+                    console.log('Failed to parse AppSheet URL:', e);
+                }
+            }
+            
+            return [...new Set(alternatives)]; // Remove duplicates
+        }
+
+        // Fungsi untuk menampilkan gambar dengan multiple fallback strategies
         function loadImageFromUrl() {
             const imageUrl = getUrlParameter('imageRincianPekerjaan');
             const imageContainer = document.getElementById('imageRincianPekerjaan');
             
-            if (imageUrl && imageUrl.trim() !== '' && imageUrl !== '-') {
-                // Decode URL jika perlu (untuk menangani ENCODEURL dari AppSheet)
-                let decodedUrl = decodeURIComponent(imageUrl);
+            if (!imageUrl || imageUrl.trim() === '' || imageUrl === '-') {
+                imageContainer.innerHTML = `<div class="no-image-text">Tidak ada gambar</div>`;
+                return;
+            }
+
+            // Tampilkan status loading dengan informasi debug
+            imageContainer.innerHTML = `
+                <div class="image-status loading">
+                    🔄 Memuat gambar...
+                </div>
+                <div class="image-debug">
+                    <div class="image-debug-title">Debug Info - URL Gambar:</div>
+                    <div class="image-debug-url">${imageUrl}</div>
+                    ${isAppSheetImageUrl(imageUrl) ? `
+                        <div style="color: #ffc107; margin-top: 10px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 3px;">
+                            ⚠️ <strong>AppSheet Image Detected</strong><br>
+                            URL AppSheet memerlukan autentikasi khusus. Gambar mungkin tidak dapat dimuat langsung di browser.
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            const alternatives = getAppSheetImageAlternatives(imageUrl);
+            let attemptCount = 0;
+            
+            // Fungsi untuk mencoba load gambar
+            const tryLoadImage = (url, index) => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    
+                    // Set timeout untuk request
+                    const timeout = setTimeout(() => {
+                        reject(new Error('Timeout'));
+                    }, 15000); // 15 detik timeout
+                    
+                    img.onload = function() {
+                        clearTimeout(timeout);
+                        
+                        // Update status sukses
+                        const debugHtml = `
+                            <div class="image-debug">
+                                <div class="image-debug-title">✅ Gambar berhasil dimuat dari URL #${index + 1}:</div>
+                                <div class="image-debug-url">${url}</div>
+                            </div>
+                        `;
+                        
+                        imageContainer.innerHTML = `
+                            <div class="image-status success">
+                                ✅ Gambar berhasil dimuat
+                            </div>
+                            ${debugHtml}
+                            <img src="${url}" alt="Rincian Pekerjaan" style="max-width: 100%; max-height: 300px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 1px solid #ddd; margin-top: 10px;">
+                        `;
+                        resolve(true);
+                    };
+                    
+                    img.onerror = function() {
+                        clearTimeout(timeout);
+                        reject(new Error('Load failed'));
+                    };
+                    
+                    // Set headers untuk CORS jika perlu
+                    img.crossOrigin = 'anonymous';
+                    img.src = url;
+                });
+            };
+
+            // Fungsi untuk mencoba URL satu per satu
+            const tryNext = async () => {
+                if (attemptCount >= alternatives.length) {
+                    // Semua URL gagal
+                    const failedUrlsHtml = alternatives.map((url, index) => `
+                        <div style="margin: 5px 0; padding: 8px; background-color: #f8f9fa; border-radius: 3px;">
+                            <strong>URL #${index + 1}:</strong><br>
+                            <span style="font-family: monospace; font-size: 11px; word-break: break-all; color: #666;">${url}</span><br>
+                            <a href="${url}" target="_blank" class="try-direct-link">Buka di Tab Baru</a>
+                        </div>
+                    `).join('');
+                    
+                    imageContainer.innerHTML = `
+                        <div class="image-status error">
+                            ❌ Tidak dapat memuat gambar dari semua URL yang dicoba
+                        </div>
+                        <div class="image-debug">
+                            <div class="image-debug-title">URL yang dicoba:</div>
+                            ${failedUrlsHtml}
+                            <div style="margin-top: 15px; padding: 10px; background-color: #e3f2fd; border-radius: 5px; color: #1976d2;">
+                                <strong>💡 Tips untuk AppSheet Images:</strong><br>
+                                1. Pastikan aplikasi AppSheet dapat diakses publik<br>
+                                2. Coba buka URL gambar langsung di browser baru<br>
+                                3. Gunakan layanan hosting gambar lain seperti Google Drive, Imgur, atau Cloudinary<br>
+                                4. Upload gambar ke folder publik dan gunakan direct link
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
                 
-                // Tampilkan loading message
+                const currentUrl = alternatives[attemptCount];
+                
+                // Update status dengan URL yang sedang dicoba
                 imageContainer.innerHTML = `
-                    <div style="color: #666; font-style: italic; padding: 20px;">
-                        Memuat gambar...
+                    <div class="image-status loading">
+                        🔄 Mencoba URL #${attemptCount + 1} dari ${alternatives.length}...
+                    </div>
+                    <div class="image-debug">
+                        <div class="image-debug-title">Sedang mencoba:</div>
+                        <div class="image-debug-url">${currentUrl}</div>
                     </div>
                 `;
                 
-                // Coba load gambar dengan berbagai kemungkinan URL
-                const tryLoadImage = (url) => {
-                    return new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.crossOrigin = 'anonymous'; // Untuk menangani CORS
-                        
-                        img.onload = function() {
-                            imageContainer.innerHTML = `
-                                <img src="${url}" alt="Rincian Pekerjaan" style="max-width: 100%; max-height: 300px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 1px solid #ddd;">
-                                <div style="font-size: 12px; color: #999; margin-top: 5px; word-break: break-all;">URL: ${url}</div>
-                            `;
-                            resolve(true);
-                        };
-                        
-                        img.onerror = function() {
-                            reject(false);
-                        };
-                        
-                        img.src = url;
-                    });
-                };
-                
-                // Array URL untuk dicoba
-                const urlsToTry = [
-                    decodedUrl,
-                    imageUrl, // URL asli tanpa decode
-                    decodedUrl.replace(/^http:/, 'https:'), // Force HTTPS
-                    imageUrl.replace(/^http:/, 'https:')
-                ];
-                
-                // Hapus duplikat
-                const uniqueUrls = [...new Set(urlsToTry)];
-                
-                // Coba load gambar satu per satu
-                let urlIndex = 0;
-                const tryNext = async () => {
-                    if (urlIndex >= uniqueUrls.length) {
-                        // Semua URL gagal, tampilkan pesan error dengan URL untuk debugging
-                        imageContainer.innerHTML = `
-                            <div style="padding: 20px; border: 1px dashed #ccc; border-radius: 5px;">
-                                <div style="color: #dc3545; font-weight: bold; margin-bottom: 10px;">
-                                    ❌ Gambar tidak dapat dimuat
-                                </div>
-                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">
-                                    URL yang dicoba:
-                                </div>
-                                ${uniqueUrls.map((url, index) => `
-                                    <div style="font-size: 11px; color: #999; margin: 2px 0; word-break: break-all; background: #f8f9fa; padding: 5px; border-radius: 3px;">
-                                        ${index + 1}. ${url}
-                                    </div>
-                                `).join('')}
-                                <div style="font-size: 12px; color: #666; margin-top: 10px;">
-                                    💡 Tips: Pastikan URL gambar dapat diakses publik atau gunakan layanan hosting gambar seperti Google Drive (dengan sharing public), Imgur, atau CloudFlare Images.
-                                </div>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    try {
-                        await tryLoadImage(uniqueUrls[urlIndex]);
-                    } catch {
-                        urlIndex++;
-                        tryNext();
-                    }
-                };
-                
-                tryNext();
-                
-            } else {
-                imageContainer.innerHTML = `
-                    <div class="no-image-text">Tidak ada gambar</div>
-                `;
-            }
+                try {
+                    await tryLoadImage(currentUrl, attemptCount);
+                } catch (error) {
+                    attemptCount++;
+                    setTimeout(tryNext, 1000); // Delay 1 detik sebelum mencoba URL berikutnya
+                }
+            };
+
+            // Mulai proses loading
+            tryNext();
         }
 
         // Fungsi untuk mengatur status checkbox berdasarkan parameter URL
@@ -647,12 +794,6 @@
             // Set checkbox states
             setCheckboxStates();
 
-            // Checkbox labels tidak perlu diupdate lagi karena sudah fixed di HTML
-            // Jika ingin dynamic labels, uncomment baris berikut:
-            // document.getElementById('checkLabel1').textContent = getUrlParameter('checkLabel1') || 'Cek kebersihan mesin dan area mesin oleh QC';
-            // document.getElementById('checkLabel2').textContent = getUrlParameter('checkLabel2') || 'Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi';
-            // document.getElementById('checkLabel3').textContent = getUrlParameter('checkLabel3') || 'Serah terima mesin oleh teknisi kepada operator produksi';
-
             // Signature Section
             const diterima = getUrlParameter('diterima') || '-';
             const menyetujui = getUrlParameter('menyetujui') || '-';
@@ -680,6 +821,10 @@
         function exportToWord() {
             const element = document.getElementById('printArea');
             const clonedElement = element.cloneNode(true);
+            
+            // Remove debug elements for Word export
+            const debugElements = clonedElement.querySelectorAll('.image-debug, .image-status');
+            debugElements.forEach(el => el.remove());
             
             const htmlContent = `
                 <!DOCTYPE html>
@@ -736,9 +881,9 @@
             printStyle.textContent = `
                 @page { size: A4; margin: 10mm; }
                 @media print {
-                    body { margin: 5; padding: 0; background: white; }
+                    body { margin: 0; padding: 0; background: white; }
                     .container { box-shadow: none; max-width: none; margin: 0; padding: 0; }
-                    .buttons, .info-section { display: none; }
+                    .buttons, .info-section, .image-debug, .image-status { display: none; }
                     .body-table tr:nth-child(even),
                     .footer-table tr:nth-child(even) {
                         background-color: white !important;
@@ -754,6 +899,17 @@
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('printArea');
+            
+            // Clone element and remove debug info for PDF
+            const clonedElement = element.cloneNode(true);
+            const debugElements = clonedElement.querySelectorAll('.image-debug, .image-status');
+            debugElements.forEach(el => el.remove());
+            
+            // Temporarily replace the original element
+            const originalParent = element.parentNode;
+            const originalNextSibling = element.nextSibling;
+            originalParent.removeChild(element);
+            originalParent.insertBefore(clonedElement, originalNextSibling);
             
             // Buat styling khusus untuk PDF export
             const pdfStyle = document.createElement('style');
@@ -784,7 +940,7 @@
             `;
             document.head.appendChild(pdfStyle);
             
-            html2canvas(element, {
+            html2canvas(clonedElement, {
                 scale: 2,
                 useCORS: true,
                 allowTaint: true,
@@ -818,11 +974,21 @@
                 
                 pdf.save(fileName);
                 
+                // Restore original element
+                originalParent.removeChild(clonedElement);
+                originalParent.insertBefore(element, originalNextSibling);
+                
                 // Remove temporary style
                 document.head.removeChild(pdfStyle);
             }).catch(function(error) {
                 console.error('Error generating PDF:', error);
                 alert('Terjadi kesalahan saat membuat PDF. Silakan coba lagi.');
+                
+                // Restore original element in case of error
+                if (originalParent.contains(clonedElement)) {
+                    originalParent.removeChild(clonedElement);
+                    originalParent.insertBefore(element, originalNextSibling);
+                }
                 
                 // Remove temporary style in case of error
                 const tempStyle = document.getElementById('pdf-export-style');
