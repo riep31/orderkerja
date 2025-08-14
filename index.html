@@ -563,7 +563,89 @@
             return url && url.includes('appsheet.com/image/getimageurl');
         }
 
-        // Fungsi untuk membuat proxy URL atau alternative URL untuk AppSheet images
+        // Fungsi untuk resolve AppSheet redirect URL ke Google Drive URL
+        async function resolveAppSheetRedirect(appSheetUrl) {
+            return new Promise((resolve, reject) => {
+                // Buat iframe tersembunyi untuk mengikuti redirect
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.style.width = '1px';
+                iframe.style.height = '1px';
+                iframe.style.position = 'absolute';
+                iframe.style.left = '-9999px';
+                
+                let resolved = false;
+                
+                // Timeout untuk menghindari hanging
+                const timeout = setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        document.body.removeChild(iframe);
+                        reject(new Error('Timeout resolving redirect'));
+                    }
+                }, 10000);
+                
+                // Event listener untuk load
+                iframe.onload = function() {
+                    try {
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timeout);
+                            
+                            // Ambil URL final setelah redirect
+                            const finalUrl = iframe.contentWindow.location.href;
+                            document.body.removeChild(iframe);
+                            
+                            if (finalUrl && finalUrl !== appSheetUrl && finalUrl.includes('googleusercontent.com')) {
+                                resolve(finalUrl);
+                            } else {
+                                reject(new Error('No valid redirect found'));
+                            }
+                        }
+                    } catch (e) {
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timeout);
+                            document.body.removeChild(iframe);
+                            reject(e);
+                        }
+                    }
+                };
+                
+                iframe.onerror = function() {
+                    if (!resolved) {
+                        resolved = true;
+                        clearTimeout(timeout);
+                        document.body.removeChild(iframe);
+                        reject(new Error('Failed to load iframe'));
+                    }
+                };
+                
+                // Tambahkan iframe ke DOM dan load URL
+                document.body.appendChild(iframe);
+                iframe.src = appSheetUrl;
+            });
+        }
+
+        // Fungsi alternative untuk resolve AppSheet URL menggunakan fetch
+        async function resolveAppSheetWithFetch(appSheetUrl) {
+            try {
+                const response = await fetch(appSheetUrl, {
+                    method: 'HEAD',
+                    redirect: 'follow',
+                    mode: 'cors'
+                });
+                
+                if (response.url && response.url !== appSheetUrl && response.url.includes('googleusercontent.com')) {
+                    return response.url;
+                }
+                throw new Error('No redirect found or invalid redirect');
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        // Fungsi untuk membuat berbagai alternatif URL untuk AppSheet images
         function getAppSheetImageAlternatives(originalUrl) {
             const alternatives = [];
             
@@ -584,14 +666,14 @@
                 try {
                     const urlObj = new URL(decodedUrl);
                     const params = urlObj.searchParams;
-                    const fileName = params.get('fileName');
-                    const appName = params.get('appName');
+                    const fileName = params.get('filename') || params.get('fileName');
+                    const appName = params.get('appname') || params.get('appName');
                     const tableName = params.get('tableName');
                     
                     if (fileName && appName) {
                         // Coba beberapa format URL alternatif untuk AppSheet
-                        alternatives.push(`https://www.appsheet.com/api/v2/apps/${appName}/tables/${tableName}/attachments/${fileName}`);
-                        alternatives.push(`https://${appName}.appsheet.com/image/${fileName}`);
+                        alternatives.push(`https://www.appsheet.com/api/v2/apps/${appName}/tables/${encodeURIComponent(tableName)}/attachments/${encodeURIComponent(fileName)}`);
+                        alternatives.push(`https://www.appsheet.com/image/${appName}/${encodeURIComponent(fileName)}`);
                     }
                 } catch (e) {
                     console.log('Failed to parse AppSheet URL:', e);
