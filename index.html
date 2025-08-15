@@ -222,6 +222,21 @@
             margin: 10px 0;
         }
 
+        /* Hidden image row styling */
+        .hidden-row {
+            display: none;
+        }
+
+        .no-image-placeholder {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 40px;
+            background-color: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+        }
+
         @media print {
             body {
                 background-color: white;
@@ -256,6 +271,10 @@
             @page {
                 size: A4;
                 margin: 5mm;
+            }
+
+            .hidden-row {
+                display: none !important;
             }
         }
 
@@ -434,22 +453,22 @@
             </table>
 
             <!-- Halaman 2: Gambar 1 dan 2 -->
-            <div class="page-break">
+            <div class="page-break" id="imagePage2">
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 2</div>
                 <table class="body-table">
                     <tbody>
-                        <tr>
+                        <tr id="imageRow1">
                             <td class="field-name">Gambar 1</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%201.082325.png" 
-                                     alt="Gambar 1" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                                <img src="" alt="Gambar 1" 
+                                     style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="imageRow2">
                             <td class="field-name">Gambar 2</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%202.082326.png" 
-                                     alt="Gambar 2" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                                <img src="" alt="Gambar 2" 
+                                     style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
                             </td>
                         </tr>
                     </tbody>
@@ -457,22 +476,22 @@
             </div>
 
             <!-- Halaman 3: Gambar 3 dan 4 -->
-            <div class="page-break">
+            <div class="page-break" id="imagePage3">
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 3</div>
                 <table class="body-table">
                     <tbody>
-                        <tr>
+                        <tr id="imageRow3">
                             <td class="field-name">Gambar 3</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%203.082327.png" 
-                                     alt="Gambar 3" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                                <img src="" alt="Gambar 3" 
+                                     style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="imageRow4">
                             <td class="field-name">Gambar 4</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%204.082328.png" 
-                                     alt="Gambar 4" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                                <img src="" alt="Gambar 4" 
+                                     style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
                             </td>
                         </tr>
                     </tbody>
@@ -561,6 +580,75 @@
             }
         }
 
+        // Fungsi untuk load gambar dinamis dari parameter URL - Versi Sederhana
+        function loadDynamicImages() {
+            // Ambil URL gambar dari parameter
+            const image1Url = getUrlParameter('image1');
+            const image2Url = getUrlParameter('image2');
+            const image3Url = getUrlParameter('image3');
+            const image4Url = getUrlParameter('image4');
+            
+            // Set src untuk setiap gambar - HTML sederhana
+            const images = document.querySelectorAll('#imagePage2 img, #imagePage3 img');
+            
+            // Gambar 1
+            if (image1Url && image1Url.trim() !== '') {
+                images[0].src = decodeURIComponent(image1Url);
+                document.getElementById('imageRow1').style.display = 'table-row';
+            } else {
+                document.getElementById('imageRow1').style.display = 'none';
+            }
+            
+            // Gambar 2
+            if (image2Url && image2Url.trim() !== '') {
+                images[1].src = decodeURIComponent(image2Url);
+                document.getElementById('imageRow2').style.display = 'table-row';
+            } else {
+                document.getElementById('imageRow2').style.display = 'none';
+            }
+            
+            // Gambar 3
+            if (image3Url && image3Url.trim() !== '') {
+                images[2].src = decodeURIComponent(image3Url);
+                document.getElementById('imageRow3').style.display = 'table-row';
+            } else {
+                document.getElementById('imageRow3').style.display = 'none';
+            }
+            
+            // Gambar 4
+            if (image4Url && image4Url.trim() !== '') {
+                images[3].src = decodeURIComponent(image4Url);
+                document.getElementById('imageRow4').style.display = 'table-row';
+            } else {
+                document.getElementById('imageRow4').style.display = 'none';
+            }
+            
+            // Cek apakah halaman 2 dan 3 memiliki gambar
+            const page2HasImages = (image1Url && image1Url.trim() !== '') || (image2Url && image2Url.trim() !== '');
+            const page3HasImages = (image3Url && image3Url.trim() !== '') || (image4Url && image4Url.trim() !== '');
+            
+            // Hide/show pages based on image availability
+            if (!page2HasImages) {
+                document.getElementById('imagePage2').style.display = 'none';
+            }
+            
+            if (!page3HasImages) {
+                document.getElementById('imagePage3').style.display = 'none';
+            }
+            
+            // Update page count
+            updatePageCount(page2HasImages, page3HasImages);
+        }
+
+        // Fungsi untuk update jumlah halaman
+        function updatePageCount(page2Visible, page3Visible) {
+            let totalPages = 1; // Halaman 1 selalu ada
+            if (page2Visible) totalPages++;
+            if (page3Visible) totalPages++;
+            
+            document.getElementById('halaman').textContent = `1 dari ${totalPages}`;
+        }
+
         // Fungsi load data dari URL
         function loadDataFromUrl() {
             // Header Document Info
@@ -568,7 +656,6 @@
             document.getElementById('statusDokumen').textContent = getUrlParameter('statusDokumen') || 'Dikendalikan';
             document.getElementById('revisi').textContent = getUrlParameter('revisi') || '02';
             document.getElementById('tanggalTerbit').textContent = getUrlParameter('tanggalTerbit') || '10 Maret 2021';
-            document.getElementById('halaman').textContent = getUrlParameter('halaman') || '1 dari 3';
 
             // Body Information
             document.getElementById('noOK').textContent = getUrlParameter('noOK') || '-';
@@ -590,6 +677,9 @@
 
             // Set checkbox states
             setCheckboxStates();
+
+            // Load dynamic images
+            loadDynamicImages();
 
             // Signature Section
             const diterima = getUrlParameter('diterima') || '-';
@@ -642,11 +732,8 @@
                         .image-container img { max-width: 100%; max-height: 300px; }
                         .body-table tr:nth-child(even) { background-color: #f9f9f9; }
                         .page-break { page-break-before: always; }
-                        .image-page h2 { text-align: center; color: #333; margin: 30px 0; font-size: 24px; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
-                        .image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 30px 0; }
-                        .image-item { text-align: center; padding: 15px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9; }
-                        .image-item h3 { color: #555; margin-bottom: 15px; font-size: 18px; }
-                        .image-item img { width: 100%; max-width: 400px; height: auto; border-radius: 10px; }
+                        .hidden-row { display: none !important; }
+                        .no-image-placeholder { color: #999; font-style: italic; text-align: center; padding: 20px; }
                     </style>
                 </head>
                 <body>
@@ -688,6 +775,7 @@
                         background-color: white !important;
                     }
                     .page-break { page-break-before: always; }
+                    .hidden-row { display: none !important; }
                     .image-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
                 }
             `;
@@ -726,6 +814,9 @@
                 .body-table tr:nth-child(even),
                 .footer-table tr:nth-child(even) {
                     background-color: white !important;
+                }
+                .hidden-row {
+                    display: none !important;
                 }
             `;
             document.head.appendChild(pdfStyle);
