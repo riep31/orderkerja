@@ -457,18 +457,36 @@
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 2</div>
                 <table class="body-table">
                     <tbody>
-                        <tr id="imageRow1">
+                        <tr>
                             <td class="field-name">Gambar 1</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img src="" alt="Gambar 1" 
-                                     style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                                <script>
+                                    const img1Url = getUrlParameter('image1');
+                                    if (img1Url && img1Url.trim() !== '') {
+                                        document.write('<img src="' + decodeURIComponent(img1Url) + '" alt="Gambar 1" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">');
+                                    } else {
+                                        document.write('<div class="no-image-placeholder">Tidak ada gambar tersedia</div>');
+                                    }
+                                </script>
+                                <noscript>
+                                    <div class="no-image-placeholder">JavaScript diperlukan untuk menampilkan gambar</div>
+                                </noscript>
                             </td>
                         </tr>
-                        <tr id="imageRow2">
+                        <tr>
                             <td class="field-name">Gambar 2</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img src="" alt="Gambar 2" 
-                                     style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                                <script>
+                                    const img2Url = getUrlParameter('image2');
+                                    if (img2Url && img2Url.trim() !== '') {
+                                        document.write('<img src="' + decodeURIComponent(img2Url) + '" alt="Gambar 2" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">');
+                                    } else {
+                                        document.write('<div class="no-image-placeholder">Tidak ada gambar tersedia</div>');
+                                    }
+                                </script>
+                                <noscript>
+                                    <div class="no-image-placeholder">JavaScript diperlukan untuk menampilkan gambar</div>
+                                </noscript>
                             </td>
                         </tr>
                     </tbody>
@@ -480,18 +498,36 @@
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 3</div>
                 <table class="body-table">
                     <tbody>
-                        <tr id="imageRow3">
+                        <tr>
                             <td class="field-name">Gambar 3</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img src="" alt="Gambar 3" 
-                                     style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                                <script>
+                                    const img3Url = getUrlParameter('image3');
+                                    if (img3Url && img3Url.trim() !== '') {
+                                        document.write('<img src="' + decodeURIComponent(img3Url) + '" alt="Gambar 3" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">');
+                                    } else {
+                                        document.write('<div class="no-image-placeholder">Tidak ada gambar tersedia</div>');
+                                    }
+                                </script>
+                                <noscript>
+                                    <div class="no-image-placeholder">JavaScript diperlukan untuk menampilkan gambar</div>
+                                </noscript>
                             </td>
                         </tr>
-                        <tr id="imageRow4">
+                        <tr>
                             <td class="field-name">Gambar 4</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img src="" alt="Gambar 4" 
-                                     style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                                <script>
+                                    const img4Url = getUrlParameter('image4');
+                                    if (img4Url && img4Url.trim() !== '') {
+                                        document.write('<img src="' + decodeURIComponent(img4Url) + '" alt="Gambar 4" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">');
+                                    } else {
+                                        document.write('<div class="no-image-placeholder">Tidak ada gambar tersedia</div>');
+                                    }
+                                </script>
+                                <noscript>
+                                    <div class="no-image-placeholder">JavaScript diperlukan untuk menampilkan gambar</div>
+                                </noscript>
                             </td>
                         </tr>
                     </tbody>
@@ -580,63 +616,20 @@
             }
         }
 
-        // Fungsi untuk load gambar dinamis dari parameter URL - Versi Sederhana
+        // Fungsi untuk load gambar dinamis dari parameter URL - Inline Script Version
         function loadDynamicImages() {
-            // Ambil URL gambar dari parameter
+            // Fungsi ini sekarang tidak diperlukan karena gambar sudah di-render inline
+            // Namun tetap ada untuk compatibility dengan fungsi lain
+            
+            // Update page count berdasarkan ketersediaan gambar
             const image1Url = getUrlParameter('image1');
             const image2Url = getUrlParameter('image2');
             const image3Url = getUrlParameter('image3');
             const image4Url = getUrlParameter('image4');
             
-            // Set src untuk setiap gambar - HTML sederhana
-            const images = document.querySelectorAll('#imagePage2 img, #imagePage3 img');
-            
-            // Gambar 1
-            if (image1Url && image1Url.trim() !== '') {
-                images[0].src = decodeURIComponent(image1Url);
-                document.getElementById('imageRow1').style.display = 'table-row';
-            } else {
-                document.getElementById('imageRow1').style.display = 'none';
-            }
-            
-            // Gambar 2
-            if (image2Url && image2Url.trim() !== '') {
-                images[1].src = decodeURIComponent(image2Url);
-                document.getElementById('imageRow2').style.display = 'table-row';
-            } else {
-                document.getElementById('imageRow2').style.display = 'none';
-            }
-            
-            // Gambar 3
-            if (image3Url && image3Url.trim() !== '') {
-                images[2].src = decodeURIComponent(image3Url);
-                document.getElementById('imageRow3').style.display = 'table-row';
-            } else {
-                document.getElementById('imageRow3').style.display = 'none';
-            }
-            
-            // Gambar 4
-            if (image4Url && image4Url.trim() !== '') {
-                images[3].src = decodeURIComponent(image4Url);
-                document.getElementById('imageRow4').style.display = 'table-row';
-            } else {
-                document.getElementById('imageRow4').style.display = 'none';
-            }
-            
-            // Cek apakah halaman 2 dan 3 memiliki gambar
             const page2HasImages = (image1Url && image1Url.trim() !== '') || (image2Url && image2Url.trim() !== '');
             const page3HasImages = (image3Url && image3Url.trim() !== '') || (image4Url && image4Url.trim() !== '');
             
-            // Hide/show pages based on image availability
-            if (!page2HasImages) {
-                document.getElementById('imagePage2').style.display = 'none';
-            }
-            
-            if (!page3HasImages) {
-                document.getElementById('imagePage3').style.display = 'none';
-            }
-            
-            // Update page count
             updatePageCount(page2HasImages, page3HasImages);
         }
 
