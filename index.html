@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+/* Page break untuk print */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        .no-image-text {
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -214,81 +224,12 @@
 
         .image-container img {
             width: 100%;
-            max-width: 794px;
+            max-width: 400px;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border: 1px solid #ddd;
             margin: 10px 0;
-        }
-
-        .no-image-text {
-            color: #666;
-            font-style: italic;
-            padding: 40px 20px;
-        }
-
-        /* Page break untuk print */
-        .page-break {
-            page-break-before: always;
-            break-before: page;
-        }
-
-        /* Styling untuk halaman gambar */
-        .image-page {
-            margin-top: 30px;
-            padding: 20px;
-        }
-
-        .image-page h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 24px;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
-        }
-
-        .image-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin: 30px 0;
-        }
-
-        .image-item {
-            text-align: center;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-        }
-
-        .image-item h3 {
-            color: #555;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .image-item img {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
-        }
-
-        .image-loading {
-            color: #666;
-            font-style: italic;
-            padding: 20px;
-        }
-
-        .image-error {
-            color: #dc3545;
-            font-weight: bold;
-            padding: 20px;
         }
 
         @media print {
@@ -503,41 +444,49 @@
             </table>
 
             <!-- Halaman 2: Gambar 1 dan 2 -->
-            <div class="page-break image-page">
-                <h2>Foto Rincian Pekerjaan - Halaman 2</h2>
-                <div class="image-grid">
-                    <div class="image-item">
-                        <h3>Gambar 1</h3>
-                        <div id="image1Container">
-                            <div class="image-loading">Memuat gambar 1...</div>
-                        </div>
-                    </div>
-                    <div class="image-item">
-                        <h3>Gambar 2</h3>
-                        <div id="image2Container">
-                            <div class="image-loading">Memuat gambar 2...</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="page-break">
+                <div class="table-title">Foto Rincian Pekerjaan - Halaman 2</div>
+                <table class="body-table">
+                    <tbody>
+                        <tr>
+                            <td class="field-name">Gambar 1</td>
+                            <td style="text-align: center; padding: 20px;">
+                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%201.082325.png" 
+                                     alt="Gambar 1" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">Gambar 2</td>
+                            <td style="text-align: center; padding: 20px;">
+                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%202.082326.png" 
+                                     alt="Gambar 2" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Halaman 3: Gambar 3 dan 4 -->
-            <div class="page-break image-page">
-                <h2>Foto Rincian Pekerjaan - Halaman 3</h2>
-                <div class="image-grid">
-                    <div class="image-item">
-                        <h3>Gambar 3</h3>
-                        <div id="image3Container">
-                            <div class="image-loading">Memuat gambar 3...</div>
-                        </div>
-                    </div>
-                    <div class="image-item">
-                        <h3>Gambar 4</h3>
-                        <div id="image4Container">
-                            <div class="image-loading">Memuat gambar 4...</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="page-break">
+                <div class="table-title">Foto Rincian Pekerjaan - Halaman 3</div>
+                <table class="body-table">
+                    <tbody>
+                        <tr>
+                            <td class="field-name">Gambar 3</td>
+                            <td style="text-align: center; padding: 20px;">
+                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%203.082327.png" 
+                                     alt="Gambar 3" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="field-name">Gambar 4</td>
+                            <td style="text-align: center; padding: 20px;">
+                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%204.082328.png" 
+                                     alt="Gambar 4" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -588,65 +537,6 @@
             if (!data) data = '-';
             const encodedData = encodeURIComponent(data);
             return `https://api.qrserver.com/v1/create-qr-code/?data=${encodedData}&size=50x50`;
-        }
-
-        // Array URL gambar AppSheet
-        const imageUrls = [
-            "https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%201.082325.png",
-            "https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%202.082326.png", 
-            "https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%203.082327.png",
-            "https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%204.082328.png"
-        ];
-
-        // Fungsi untuk memuat gambar individual
-        function loadImage(imageUrl, containerId, imageNumber) {
-            const container = document.getElementById(containerId);
-            
-            if (!imageUrl || imageUrl.trim() === '') {
-                container.innerHTML = `<div class="no-image-text">Tidak ada gambar ${imageNumber}</div>`;
-                return;
-            }
-
-            // Buat elemen img
-            const img = new Image();
-            
-            img.onload = function() {
-                container.innerHTML = `<img src="${imageUrl}" alt="Gambar ${imageNumber}" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">`;
-            };
-            
-            img.onerror = function() {
-                // Jika gagal memuat, tampilkan pesan error dan link alternatif
-                container.innerHTML = `
-                    <div class="image-error">
-                        Gagal memuat gambar ${imageNumber}
-                        <br><br>
-                        <a href="${imageUrl}" target="_blank" style="color: #007bff; text-decoration: underline;">
-                            Buka gambar di tab baru
-                        </a>
-                    </div>
-                `;
-            };
-            
-            // Set crossorigin untuk mengatasi CORS
-            img.crossOrigin = 'anonymous';
-            img.src = imageUrl;
-        }
-
-        // Fungsi untuk memuat semua gambar
-        function loadAllImages() {
-            // Ambil URL gambar dari parameter URL atau gunakan default
-            const customImageUrls = [
-                getUrlParameter('image1') || imageUrls[0],
-                getUrlParameter('image2') || imageUrls[1],
-                getUrlParameter('image3') || imageUrls[2],
-                getUrlParameter('image4') || imageUrls[3]
-            ];
-
-            // Load setiap gambar
-            loadImage(customImageUrls[0], 'image1Container', 1);
-            loadImage(customImageUrls[1], 'image2Container', 2);
-            loadImage(customImageUrls[2], 'image3Container', 3);
-            loadImage(customImageUrls[3], 'image4Container', 4);
         }
 
         // Fungsi untuk mengatur status checkbox berdasarkan parameter URL
@@ -707,9 +597,6 @@
             // Format status dengan styling
             const statusText = formatStatus(getUrlParameter('status'));
             document.getElementById('status').textContent = statusText;
-
-            // Load all images
-            loadAllImages();
 
             // Set checkbox states
             setCheckboxStates();
