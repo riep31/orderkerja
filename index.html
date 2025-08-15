@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Order Kerja - PT. DAGSAP ENDURA EATORE</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -26,12 +24,6 @@
             padding: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
         }
         
         table {
@@ -61,14 +53,11 @@
             background-color: #fff;
         }
         
-        /* Striping untuk body-table dan footer-table */
-        .body-table tr:nth-child(even),
-        .footer-table tr:nth-child(even) {
+        .body-table tr:nth-child(even) {
             background-color: #f9f9f9;
         }
         
-        .body-table tr:hover,
-        .footer-table tr:hover {
+        .body-table tr:hover {
             background-color: #f5f5f5;
         }
         
@@ -142,21 +131,6 @@
             display: block;
         }
 
-        .status-completed {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .status-in-progress {
-            color: #ffc107;
-            font-weight: bold;
-        }
-
-        .status-pending {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
         .info-section {
             background-color: #f8f9fa;
             padding: 15px;
@@ -207,27 +181,19 @@
             background-color: #e0a800;
         }
 
-        .image-container {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .image-container img {
+        /* CSS-only dynamic image display */
+        .dynamic-image {
             width: 100%;
             max-width: 400px;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border: 1px solid #ddd;
-            margin: 10px 0;
+            display: block;
+            margin: 0 auto;
         }
 
-        /* Hidden image row styling */
-        .hidden-row {
-            display: none;
-        }
-
-        .no-image-placeholder {
+        .image-placeholder {
             color: #999;
             font-style: italic;
             text-align: center;
@@ -235,7 +201,71 @@
             background-color: #f8f9fa;
             border: 2px dashed #ddd;
             border-radius: 10px;
+            display: none;
         }
+
+        /* Show placeholder when no image */
+        .dynamic-image[src=""], 
+        .dynamic-image:not([src]) {
+            display: none;
+        }
+
+        .dynamic-image[src=""]+.image-placeholder,
+        .dynamic-image:not([src])+.image-placeholder {
+            display: block;
+        }
+
+        /* CSS for displaying data from URL parameters */
+        .dynamic-data {
+            position: relative;
+        }
+
+        .dynamic-data::before {
+            content: attr(data-fallback);
+            color: #333;
+        }
+
+        /* CSS variables for URL parameters - will be injected via JavaScript alternative */
+        :root {
+            --param-noOK: '-';
+            --param-department: '-';
+            --param-nama: '-';
+            --param-namaKerja: '-';
+            --param-jenisKerja: '-';
+            --param-waktuKerja: '-';
+            --param-rincianKerja: '-';
+            --param-koreksi: '-';
+            --param-rootCause: '-';
+            --param-correctiveAction: '-';
+            --param-targetSelesai: '-';
+            --param-actualSelesai: '-';
+            --param-status: '-';
+        }
+
+        /* Display data using CSS content */
+        .data-noOK::after { content: var(--param-noOK); }
+        .data-department::after { content: var(--param-department); }
+        .data-nama::after { content: var(--param-nama); }
+        .data-namaKerja::after { content: var(--param-namaKerja); }
+        .data-jenisKerja::after { content: var(--param-jenisKerja); }
+        .data-waktuKerja::after { content: var(--param-waktuKerja); }
+        .data-rincianKerja::after { content: var(--param-rincianKerja); }
+        .data-koreksi::after { content: var(--param-koreksi); }
+        .data-rootCause::after { content: var(--param-rootCause); }
+        .data-correctiveAction::after { content: var(--param-correctiveAction); }
+        .data-targetSelesai::after { content: var(--param-targetSelesai); }
+        .data-actualSelesai::after { content: var(--param-actualSelesai); }
+        .data-status::after { content: var(--param-status); }
+
+        /* Alternative: Using CSS attr() function with data attributes */
+        .attr-display::after {
+            content: attr(data-value);
+        }
+
+        /* Status styling with CSS */
+        .status-completed::after { color: #28a745; font-weight: bold; }
+        .status-in-progress::after { color: #ffc107; font-weight: bold; }
+        .status-pending::after { color: #dc3545; font-weight: bold; }
 
         @media print {
             body {
@@ -253,36 +283,30 @@
                 display: none;
             }
             
-            /* Disable striping for print */
-            .body-table tr:nth-child(even),
-            .footer-table tr:nth-child(even) {
+            .body-table tr:nth-child(even) {
                 background-color: white !important;
             }
             
             .page-break {
                 page-break-before: always;
             }
-
-            .image-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
             
             @page {
                 size: A4;
                 margin: 5mm;
             }
-
-            .hidden-row {
-                display: none !important;
-            }
         }
 
-        .param-info {
-            font-size: 12px;
-            color: #6c757d;
-            margin-bottom: 15px;
+        /* CSS-only URL parameter extraction (experimental - limited browser support) */
+        body {
+            /* This is a conceptual approach - not fully supported in all browsers */
+            --url: url();
         }
+    </style>
+
+    <!-- Inline style for dynamic CSS variables based on URL -->
+    <style id="dynamic-css">
+        /* This will be populated by minimal JavaScript or server-side */
     </style>
 </head>
 <body>
@@ -290,12 +314,11 @@
         <!-- Info Section -->
         <div class="info-section">
             <h4>Form Order Kerja - PT. DAGSAP ENDURA EATORE</h4>
+            
         </div>
 
         <!-- Form Preview - Halaman 1 -->
         <div id="printArea">
-           
-            
             <div class="table-title"></div>
             <table class="header-table">
                 <tbody>
@@ -308,23 +331,23 @@
                             FORM ORDER KERJA (OK)
                         </td>
                         <td>Nomor Dokumen</td>
-                        <td id="nomorDokumen">DEE-YG-SX-XX-003-13</td>
+                        <td>DEE-YG-SX-XX-003-13</td>
                     </tr>
                     <tr>
                         <td>Status Dokumen</td>
-                        <td id="statusDokumen">Dikendalikan</td>
+                        <td>Dikendalikan</td>
                     </tr>
                     <tr>
                         <td>Revisi</td>
-                        <td id="revisi">02</td>
+                        <td>02</td>
                     </tr>
                     <tr>
                         <td>Tanggal Terbit</td>
-                        <td id="tanggalTerbit">10 Maret 2021</td>
+                        <td>10 Maret 2021</td>
                     </tr>
                     <tr>
                         <td>Halaman</td>
-                        <td id="halaman">1 dari 3</td>
+                        <td>1 dari 3</td>
                     </tr>
                 </tbody>
             </table>
@@ -334,55 +357,55 @@
                 <tbody>
                     <tr>
                         <td class="field-name">No. OK</td>
-                        <td id="noOK">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr>
                         <td class="field-name">Department</td>
-                        <td id="department">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr>
                         <td class="field-name">Nama</td>
-                        <td id="nama">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr>
                         <td class="field-name">Nama Sifat Pekerjaan</td>
-                        <td id="namaKerja">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr>
                         <td class="field-name">Jenis Pekerjaan</td>
-                        <td id="jenisKerja">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr>
                         <td class="field-name">Waktu Pengerjaan</td>
-                        <td id="waktuKerja">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr class="long-text-row">
                         <td class="field-name">Rincian Pekerjaan</td>
-                        <td id="rincianKerja">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr class="long-text-row">
                         <td class="field-name">Koreksi</td>
-                        <td id="koreksi">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr class="long-text-row">
                         <td class="field-name">Root Cause Analysis</td>
-                        <td id="rootCause">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr class="long-text-row">
                         <td class="field-name">Corrective Action</td>
-                        <td id="correctiveAction">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr>
                         <td class="field-name">Target Selesai</td>
-                        <td id="targetSelesai">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr>
                         <td class="field-name">Actual Selesai</td>
-                        <td id="actualSelesai">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                     <tr>
                         <td class="field-name">Status</td>
-                        <td id="status">-</td>
+                        <td class="attr-display" data-value="-"></td>
                     </tr>
                 </tbody>
             </table>
@@ -392,26 +415,26 @@
                 <tbody>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" id="check1" style="width: 18px; height: 18px;" disabled>
+                            <input type="checkbox" style="width: 18px; height: 18px;" disabled>
                         </td>
                         <td>
-                            <label for="check1" style="cursor: pointer; font-weight: normal;" id="checkLabel1">Cek kebersihan mesin dan area mesin oleh QC</label>
+                            <label style="cursor: pointer; font-weight: normal;">Cek kebersihan mesin dan area mesin oleh QC</label>
                         </td>
                     </tr>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" id="check2" style="width: 18px; height: 18px;" disabled>
+                            <input type="checkbox" style="width: 18px; height: 18px;" disabled>
                         </td>
                         <td>
-                            <label for="check2" style="cursor: pointer; font-weight: normal;" id="checkLabel2">Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi</label>
+                            <label style="cursor: pointer; font-weight: normal;">Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi</label>
                         </td>
                     </tr>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" id="check3" style="width: 18px; height: 18px;" disabled>
+                            <input type="checkbox" style="width: 18px; height: 18px;" disabled>
                         </td>
                         <td>
-                            <label for="check3" style="cursor: pointer; font-weight: normal;" id="checkLabel3">Serah terima mesin oleh teknisi kepada operator produksi</label>
+                            <label style="cursor: pointer; font-weight: normal;">Serah terima mesin oleh teknisi kepada operator produksi</label>
                         </td>
                     </tr>
                 </tbody>
@@ -419,7 +442,7 @@
 
             <table class="footer-table">
                 <tbody>
-                    <tr class="footer-table">
+                    <tr>
                         <td>Diterima Oleh</td>
                         <td>Menyetujui</td>
                         <td>Pelaksana</td>
@@ -427,66 +450,78 @@
                     </tr>
                     <tr class="signature-row">
                         <td>
-                            <img id="qrDiterima" src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Diterima%20Oleh" 
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Diterima%20Oleh" 
                                  alt="QR Code Diterima" class="qr-code">
                         </td>
                         <td>
-                            <img id="qrMenyetujui" src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Menyetujui" 
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Menyetujui" 
                                  alt="QR Code Menyetujui" class="qr-code">
                         </td>
                         <td>
-                            <img id="qrPelaksana" src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Pelaksana" 
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Pelaksana" 
                                  alt="QR Code Pelaksana" class="qr-code">
                         </td>
                         <td>
-                            <img id="qrDiketahui" src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Diketahui" 
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Diketahui" 
                                  alt="QR Code Diketahui" class="qr-code">
                         </td>
                     </tr>
                     <tr class="name-row">
-                        <td id="nameDiterima">-<br>-</td>
-                        <td id="nameMenyetujui">-<br>-</td>
-                        <td id="namePelaksana">-<br>-</td>
-                        <td id="nameDiketahui">-<br>-</td>
+                        <td class="attr-display" data-value="-">-<br>-</td>
+                        <td class="attr-display" data-value="-">-<br>-</td>
+                        <td class="attr-display" data-value="-">-<br>-</td>
+                        <td class="attr-display" data-value="-">-<br>-</td>
                     </tr>
                 </tbody>
             </table>
 
-            <!-- Halaman 2: Gambar 1 dan 2 -->
-            <div class="page-break" id="imagePage2">
+            <!-- Halaman 2: Gambar 1 dan 2 - CSS Background Method -->
+            <div class="page-break">
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 2</div>
                 <table class="body-table">
                     <tbody>
                         <tr>
                             <td class="field-name">Gambar 1</td>
                             <td style="text-align: center; padding: 20px;">
-                                <script>
-                                    const img1Url = getUrlParameter('image1');
-                                    if (img1Url && img1Url.trim() !== '') {
-                                        document.write('<img src="' + decodeURIComponent(img1Url) + '" alt="Gambar 1" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">');
-                                    } else {
-                                        document.write('<div class="no-image-placeholder">Tidak ada gambar tersedia</div>');
-                                    }
-                                </script>
-                                <noscript>
-                                    <div class="no-image-placeholder">JavaScript diperlukan untuk menampilkan gambar</div>
-                                </noscript>
+                                <!-- Method 1: CSS Background Image -->
+                                <div id="image1-bg" class="css-image-container" style="
+                                    width: 400px; 
+                                    height: 300px; 
+                                    margin: 0 auto;
+                                    background-size: contain; 
+                                    background-repeat: no-repeat; 
+                                    background-position: center;
+                                    border: 1px solid #ddd;
+                                    border-radius: 10px;
+                                    background-image: url('');
+                                ">
+                                    <div class="image-placeholder">Tidak ada gambar tersedia</div>
+                                </div>
+                                
+                                <!-- Method 2: Regular img tag with CSS control -->
+                                <img id="image1-img" class="dynamic-image" src="" alt="Gambar 1">
+                                <div class="image-placeholder">Tidak ada gambar 1 tersedia</div>
                             </td>
                         </tr>
                         <tr>
                             <td class="field-name">Gambar 2</td>
                             <td style="text-align: center; padding: 20px;">
-                                <script>
-                                    const img2Url = getUrlParameter('image2');
-                                    if (img2Url && img2Url.trim() !== '') {
-                                        document.write('<img src="' + decodeURIComponent(img2Url) + '" alt="Gambar 2" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">');
-                                    } else {
-                                        document.write('<div class="no-image-placeholder">Tidak ada gambar tersedia</div>');
-                                    }
-                                </script>
-                                <noscript>
-                                    <div class="no-image-placeholder">JavaScript diperlukan untuk menampilkan gambar</div>
-                                </noscript>
+                                <div id="image2-bg" class="css-image-container" style="
+                                    width: 400px; 
+                                    height: 300px; 
+                                    margin: 0 auto;
+                                    background-size: contain; 
+                                    background-repeat: no-repeat; 
+                                    background-position: center;
+                                    border: 1px solid #ddd;
+                                    border-radius: 10px;
+                                    background-image: url('');
+                                ">
+                                    <div class="image-placeholder">Tidak ada gambar tersedia</div>
+                                </div>
+                                
+                                <img id="image2-img" class="dynamic-image" src="" alt="Gambar 2">
+                                <div class="image-placeholder">Tidak ada gambar 2 tersedia</div>
                             </td>
                         </tr>
                     </tbody>
@@ -494,40 +529,50 @@
             </div>
 
             <!-- Halaman 3: Gambar 3 dan 4 -->
-            <div class="page-break" id="imagePage3">
+            <div class="page-break">
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 3</div>
                 <table class="body-table">
                     <tbody>
                         <tr>
                             <td class="field-name">Gambar 3</td>
                             <td style="text-align: center; padding: 20px;">
-                                <script>
-                                    const img3Url = getUrlParameter('image3');
-                                    if (img3Url && img3Url.trim() !== '') {
-                                        document.write('<img src="' + decodeURIComponent(img3Url) + '" alt="Gambar 3" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">');
-                                    } else {
-                                        document.write('<div class="no-image-placeholder">Tidak ada gambar tersedia</div>');
-                                    }
-                                </script>
-                                <noscript>
-                                    <div class="no-image-placeholder">JavaScript diperlukan untuk menampilkan gambar</div>
-                                </noscript>
+                                <div id="image3-bg" class="css-image-container" style="
+                                    width: 400px; 
+                                    height: 300px; 
+                                    margin: 0 auto;
+                                    background-size: contain; 
+                                    background-repeat: no-repeat; 
+                                    background-position: center;
+                                    border: 1px solid #ddd;
+                                    border-radius: 10px;
+                                    background-image: url('');
+                                ">
+                                    <div class="image-placeholder">Tidak ada gambar tersedia</div>
+                                </div>
+                                
+                                <img id="image3-img" class="dynamic-image" src="" alt="Gambar 3">
+                                <div class="image-placeholder">Tidak ada gambar 3 tersedia</div>
                             </td>
                         </tr>
                         <tr>
                             <td class="field-name">Gambar 4</td>
                             <td style="text-align: center; padding: 20px;">
-                                <script>
-                                    const img4Url = getUrlParameter('image4');
-                                    if (img4Url && img4Url.trim() !== '') {
-                                        document.write('<img src="' + decodeURIComponent(img4Url) + '" alt="Gambar 4" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">');
-                                    } else {
-                                        document.write('<div class="no-image-placeholder">Tidak ada gambar tersedia</div>');
-                                    }
-                                </script>
-                                <noscript>
-                                    <div class="no-image-placeholder">JavaScript diperlukan untuk menampilkan gambar</div>
-                                </noscript>
+                                <div id="image4-bg" class="css-image-container" style="
+                                    width: 400px; 
+                                    height: 300px; 
+                                    margin: 0 auto;
+                                    background-size: contain; 
+                                    background-repeat: no-repeat; 
+                                    background-position: center;
+                                    border: 1px solid #ddd;
+                                    border-radius: 10px;
+                                    background-image: url('');
+                                ">
+                                    <div class="image-placeholder">Tidak ada gambar tersedia</div>
+                                </div>
+                                
+                                <img id="image4-img" class="dynamic-image" src="" alt="Gambar 4">
+                                <div class="image-placeholder">Tidak ada gambar 4 tersedia</div>
                             </td>
                         </tr>
                     </tbody>
@@ -537,343 +582,65 @@
 
         <!-- Buttons -->
         <div class="buttons">
-            <button class="btn" onclick="printForm()">Print Form</button>
-            <button class="btn btn-success" onclick="exportToPDF()">Export PDF</button>
-            <button class="btn btn-warning" onclick="exportToWord()">Download Word</button>
+            <button class="btn" onclick="window.print()">Print Form</button>
+            <button class="btn btn-success" onclick="alert('Export PDF memerlukan JavaScript minimal')">Export PDF</button>
+            <button class="btn btn-warning" onclick="alert('Export Word memerlukan JavaScript minimal')">Download Word</button>
         </div>
     </div>
 
+    <!-- Minimal JavaScript untuk CSS injection dari URL parameters -->
     <script>
-        // Fungsi untuk mengambil parameter dari URL
-        function getUrlParameter(name) {
+        // Minimal JavaScript hanya untuk menginjeksi CSS dari URL parameters
+        (function() {
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name) || '';
-        }
-
-        // Fungsi format tanggal
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            try {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('id-ID');
-            } catch (e) {
-                return dateString;
-            }
-        }
-
-        // Fungsi format status dengan styling
-        function formatStatus(status) {
-            const statusElement = document.getElementById('status');
-            const cleanStatus = status?.toLowerCase().trim();
+            const dynamicCSS = document.getElementById('dynamic-css');
             
-            if (cleanStatus.includes('completed') || cleanStatus.includes('selesai')) {
-                statusElement.className = 'status-completed';
-            } else if (cleanStatus.includes('progress') || cleanStatus.includes('berjalan')) {
-                statusElement.className = 'status-in-progress';
-            } else if (cleanStatus.includes('pending') || cleanStatus.includes('menunggu')) {
-                statusElement.className = 'status-pending';
-            }
+            // Ambil parameter dan inject ke CSS
+            const params = {
+                'image1': urlParams.get('image1') || '',
+                'image2': urlParams.get('image2') || '',
+                'image3': urlParams.get('image3') || '',
+                'image4': urlParams.get('image4') || '',
+                'noOK': urlParams.get('noOK') || '-',
+                'department': urlParams.get('department') || '-',
+                'nama': urlParams.get('nama') || '-',
+                'namaKerja': urlParams.get('namaKerja') || '-',
+                'jenisKerja': urlParams.get('jenisKerja') || '-',
+                'waktuKerja': urlParams.get('waktuKerja') || '-',
+                'rincianKerja': urlParams.get('rincianKerja') || '-',
+                'koreksi': urlParams.get('koreksi') || '-',
+                'rootCause': urlParams.get('rootCause') || '-',
+                'correctiveAction': urlParams.get('correctiveAction') || '-',
+                'targetSelesai': urlParams.get('targetSelesai') || '-',
+                'actualSelesai': urlParams.get('actualSelesai') || '-',
+                'status': urlParams.get('status') || '-'
+            };
+
+            // Generate CSS untuk background images
+            let cssContent = '';
+            if (params.image1) cssContent += `#image1-bg { background-image: url('${decodeURIComponent(params.image1)}') !important; }\n`;
+            if (params.image2) cssContent += `#image2-bg { background-image: url('${decodeURIComponent(params.image2)}') !important; }\n`;
+            if (params.image3) cssContent += `#image3-bg { background-image: url('${decodeURIComponent(params.image3)}') !important; }\n`;
+            if (params.image4) cssContent += `#image4-bg { background-image: url('${decodeURIComponent(params.image4)}') !important; }\n`;
+
+            // Set img src juga
+            if (params.image1) document.getElementById('image1-img').src = decodeURIComponent(params.image1);
+            if (params.image2) document.getElementById('image2-img').src = decodeURIComponent(params.image2);
+            if (params.image3) document.getElementById('image3-img').src = decodeURIComponent(params.image3);
+            if (params.image4) document.getElementById('image4-img').src = decodeURIComponent(params.image4);
+
+            dynamicCSS.textContent = cssContent;
+
+            // Update data attributes untuk teks
+            const dataElements = document.querySelectorAll('.attr-display');
+            const paramKeys = ['noOK', 'department', 'nama', 'namaKerja', 'jenisKerja', 'waktuKerja', 'rincianKerja', 'koreksi', 'rootCause', 'correctiveAction', 'targetSelesai', 'actualSelesai', 'status'];
             
-            return status || '-';
-        }
-
-        // Fungsi generate QR Code URL
-        function generateQRCode(data) {
-            if (!data) data = '-';
-            const encodedData = encodeURIComponent(data);
-            return `https://api.qrserver.com/v1/create-qr-code/?data=${encodedData}&size=50x50`;
-        }
-
-        // Fungsi untuk mengatur status checkbox berdasarkan parameter URL
-        function setCheckboxStates() {
-            // Ambil nilai checkbox dari URL parameters dengan nama kolom yang lebih deskriptif
-            const check1Value = getUrlParameter('Cek kebersihan mesin dan area mesin oleh QC') || '';
-            const check2Value = getUrlParameter('Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi') || '';
-            const check3Value = getUrlParameter('Serah terima mesin oleh teknisi kepada operator produksi') || '';
-            
-            // Set checkbox 1
-            const checkbox1 = document.getElementById('check1');
-            if (check1Value.toLowerCase() === 'ya' || check1Value.toLowerCase() === 'yes' || check1Value === '1' || check1Value.toLowerCase() === 'true') {
-                checkbox1.checked = true;
-            } else {
-                checkbox1.checked = false;
-            }
-            
-            // Set checkbox 2
-            const checkbox2 = document.getElementById('check2');
-            if (check2Value.toLowerCase() === 'ya' || check2Value.toLowerCase() === 'yes' || check2Value === '1' || check2Value.toLowerCase() === 'true') {
-                checkbox2.checked = true;
-            } else {
-                checkbox2.checked = false;
-            }
-            
-            // Set checkbox 3
-            const checkbox3 = document.getElementById('check3');
-            if (check3Value.toLowerCase() === 'ya' || check3Value.toLowerCase() === 'yes' || check3Value === '1' || check3Value.toLowerCase() === 'true') {
-                checkbox3.checked = true;
-            } else {
-                checkbox3.checked = false;
-            }
-        }
-
-        // Fungsi untuk load gambar dinamis dari parameter URL - Inline Script Version
-        function loadDynamicImages() {
-            // Fungsi ini sekarang tidak diperlukan karena gambar sudah di-render inline
-            // Namun tetap ada untuk compatibility dengan fungsi lain
-            
-            // Update page count berdasarkan ketersediaan gambar
-            const image1Url = getUrlParameter('image1');
-            const image2Url = getUrlParameter('image2');
-            const image3Url = getUrlParameter('image3');
-            const image4Url = getUrlParameter('image4');
-            
-            const page2HasImages = (image1Url && image1Url.trim() !== '') || (image2Url && image2Url.trim() !== '');
-            const page3HasImages = (image3Url && image3Url.trim() !== '') || (image4Url && image4Url.trim() !== '');
-            
-            updatePageCount(page2HasImages, page3HasImages);
-        }
-
-        // Fungsi untuk update jumlah halaman
-        function updatePageCount(page2Visible, page3Visible) {
-            let totalPages = 1; // Halaman 1 selalu ada
-            if (page2Visible) totalPages++;
-            if (page3Visible) totalPages++;
-            
-            document.getElementById('halaman').textContent = `1 dari ${totalPages}`;
-        }
-
-        // Fungsi load data dari URL
-        function loadDataFromUrl() {
-            // Header Document Info
-            document.getElementById('nomorDokumen').textContent = getUrlParameter('nomorDokumen') || 'DEE-YG-SX-XX-003-13';
-            document.getElementById('statusDokumen').textContent = getUrlParameter('statusDokumen') || 'Dikendalikan';
-            document.getElementById('revisi').textContent = getUrlParameter('revisi') || '02';
-            document.getElementById('tanggalTerbit').textContent = getUrlParameter('tanggalTerbit') || '10 Maret 2021';
-
-            // Body Information
-            document.getElementById('noOK').textContent = getUrlParameter('noOK') || '-';
-            document.getElementById('department').textContent = getUrlParameter('department') || '-';
-            document.getElementById('nama').textContent = getUrlParameter('nama') || '-';
-            document.getElementById('namaKerja').textContent = getUrlParameter('namaKerja') || '-';
-            document.getElementById('jenisKerja').textContent = getUrlParameter('jenisKerja') || '-';
-            document.getElementById('waktuKerja').textContent = getUrlParameter('waktuKerja') || '-';
-            document.getElementById('rincianKerja').textContent = getUrlParameter('rincianKerja') || '-';
-            document.getElementById('koreksi').textContent = getUrlParameter('koreksi') || '-';
-            document.getElementById('rootCause').textContent = getUrlParameter('rootCause') || '-';
-            document.getElementById('correctiveAction').textContent = getUrlParameter('correctiveAction') || '-';
-            document.getElementById('targetSelesai').textContent = formatDate(getUrlParameter('targetSelesai')) || '-';
-            document.getElementById('actualSelesai').textContent = formatDate(getUrlParameter('actualSelesai')) || '-';
-            
-            // Format status dengan styling
-            const statusText = formatStatus(getUrlParameter('status'));
-            document.getElementById('status').textContent = statusText;
-
-            // Set checkbox states
-            setCheckboxStates();
-
-            // Load dynamic images
-            loadDynamicImages();
-
-            // Signature Section
-            const diterima = getUrlParameter('diterima') || '-';
-            const menyetujui = getUrlParameter('menyetujui') || '-';
-            const pelaksana = getUrlParameter('pelaksana') || '-';
-            const diketahui = getUrlParameter('diketahui') || '-';
-
-            const jabatanDiterima = getUrlParameter('jabatanDiterima') || '-';
-            const jabatanMenyetujui = getUrlParameter('jabatanMenyetujui') || '-';
-            const jabatanPelaksana = getUrlParameter('jabatanPelaksana') || '-';
-            const jabatanDiketahui = getUrlParameter('jabatanDiketahui') || '-';
-
-            document.getElementById('nameDiterima').innerHTML = `${diterima}<br>${jabatanDiterima}`;
-            document.getElementById('nameMenyetujui').innerHTML = `${menyetujui}<br>${jabatanMenyetujui}`;
-            document.getElementById('namePelaksana').innerHTML = `${pelaksana}<br>${jabatanPelaksana}`;
-            document.getElementById('nameDiketahui').innerHTML = `${diketahui}<br>${jabatanDiketahui}`;
-
-            // Generate QR Codes
-            document.getElementById('qrDiterima').src = generateQRCode(`Diterima Oleh - ${diterima} - ${jabatanDiterima}`);
-            document.getElementById('qrMenyetujui').src = generateQRCode(`Menyetujui - ${menyetujui} - ${jabatanMenyetujui}`);
-            document.getElementById('qrPelaksana').src = generateQRCode(`Pelaksana - ${pelaksana} - ${jabatanPelaksana}`);
-            document.getElementById('qrDiketahui').src = generateQRCode(`Diketahui - ${diketahui} - ${jabatanDiketahui}`);
-        }
-
-        // Fungsi export ke Word
-        function exportToWord() {
-            const element = document.getElementById('printArea');
-            const clonedElement = element.cloneNode(true);
-            
-            const htmlContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Form Order Kerja</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 10px; }
-                        table { width: 100%; border-collapse: collapse; margin: 10px; }
-                        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
-                        th { background-color: #4CAF50; color: white; font-weight: bold; }
-                        .header-table th { background-color: #2196F3; }
-                        .field-name { font-weight: bold; background-color: #e8f5e8; }
-                        .table-title { font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; }
-                        .company-name { text-align: center; font-size: 16px; font-weight: bold; margin: 10px 0; }
-                        .footer-table td { text-align: center; border: none; }
-                        .status-completed { color: #28a745; font-weight: bold; }
-                        .status-in-progress { color: #ffc107; font-weight: bold; }
-                        .status-pending { color: #dc3545; font-weight: bold; }
-                        .image-container { text-align: center; }
-                        .image-container img { max-width: 100%; max-height: 300px; }
-                        .body-table tr:nth-child(even) { background-color: #f9f9f9; }
-                        .page-break { page-break-before: always; }
-                        .hidden-row { display: none !important; }
-                        .no-image-placeholder { color: #999; font-style: italic; text-align: center; padding: 20px; }
-                    </style>
-                </head>
-                <body>
-                    ${clonedElement.outerHTML}
-                </body>
-                </html>
-            `;
-
-            const blob = new Blob([htmlContent], { 
-                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
-            });
-            
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            
-            const noOK = getUrlParameter('noOK') || 'unknown';
-            const department = getUrlParameter('department') || 'dept';
-            const fileName = `Form_Order_Kerja_${noOK}_${department.replace(/\s+/g, '_')}.doc`;
-            
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
-
-        // Fungsi print
-        function printForm() {
-            const printStyle = document.createElement('style');
-            printStyle.textContent = `
-                @page { size: A4; margin: 10mm; }
-                @media print {
-                    body { margin: 0; padding: 0; background: white; }
-                    .container { box-shadow: none; max-width: none; margin: 0; padding: 0; }
-                    .buttons, .info-section { display: none; }
-                    .body-table tr:nth-child(even),
-                    .footer-table tr:nth-child(even) {
-                        background-color: white !important;
-                    }
-                    .page-break { page-break-before: always; }
-                    .hidden-row { display: none !important; }
-                    .image-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-                }
-            `;
-            document.head.appendChild(printStyle);
-            window.print();
-            setTimeout(() => document.head.removeChild(printStyle), 1000);
-        }
-
-        // Fungsi export PDF
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const element = document.getElementById('printArea');
-            
-            // Buat styling khusus untuk PDF export
-            const pdfStyle = document.createElement('style');
-            pdfStyle.id = 'pdf-export-style';
-            pdfStyle.textContent = `
-                .header-table th, .header-table td {
-                    background-color: #ffffff !important;
-                    color: #000000 !important;
-                    border: 1px solid #000000 !important;
-                }
-                .body-table th, .body-table td {
-                    border: 1px solid #000000 !important;
-                }
-                .field-name {
-                    background-color: #e8f5e8 !important;
-                    border: 1px solid #000000 !important;
-                }
-                th {
-                    background-color: #4CAF50 !important;
-                    color: white !important;
-                    border: 1px solid #000000 !important;
-                }
-                /* Disable striping for PDF export */
-                .body-table tr:nth-child(even),
-                .footer-table tr:nth-child(even) {
-                    background-color: white !important;
-                }
-                .hidden-row {
-                    display: none !important;
-                }
-            `;
-            document.head.appendChild(pdfStyle);
-            
-            html2canvas(element, {
-                scale: 1.5,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#ffffff',
-                width: element.scrollWidth,
-                height: element.scrollHeight
-            }).then(function(canvas) {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                // Margin 5mm
-                const margin = 5;
-                const imgWidth = 210 - (margin * 2); // A4 width minus margins
-                const pageHeight = 297 - (margin * 2); // A4 height minus margins
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                let position = margin;
-
-                // Add first page
-                pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-
-                // Add additional pages if needed
-                while (heightLeft >= 0) {
-                    position = heightLeft - imgHeight + margin;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
-                
-                const noOK = getUrlParameter('noOK') || 'unknown';
-                const department = getUrlParameter('department') || 'dept';
-                const fileName = `Form_Order_Kerja_${noOK}_${department.replace(/\s+/g, '_')}.pdf`;
-                
-                pdf.save(fileName);
-                
-                // Remove temporary style
-                document.head.removeChild(pdfStyle);
-            }).catch(function(error) {
-                console.error('Error generating PDF:', error);
-                alert('Terjadi kesalahan saat membuat PDF. Silakan coba lagi.');
-                
-                // Remove temporary style in case of error
-                const tempStyle = document.getElementById('pdf-export-style');
-                if (tempStyle) {
-                    document.head.removeChild(tempStyle);
+            dataElements.forEach((element, index) => {
+                if (paramKeys[index] && params[paramKeys[index]]) {
+                    element.setAttribute('data-value', decodeURIComponent(params[paramKeys[index]]));
                 }
             });
-        }
-
-        // Load data saat halaman dimuat
-        window.onload = function() {
-            loadDataFromUrl();
-        };
-
-        // Event listener untuk perubahan URL
-        window.addEventListener('popstate', function(event) {
-            loadDataFromUrl();
-        });
+        })();
     </script>
 </body>
 </html>
