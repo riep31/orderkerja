@@ -1,14 +1,4 @@
-/* Page break untuk print */
-        .page-break {
-            page-break-before: always;
-            break-before: page;
-        }
-
-        .no-image-text {
-            color: #666;
-            font-style: italic;
-            padding: 40px 20px;
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -451,14 +441,14 @@
                         <tr>
                             <td class="field-name">Gambar 1</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img id="image1" src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%201.082325.png" 
+                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%201.082325.png" 
                                      alt="Gambar 1" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
                             </td>
                         </tr>
                         <tr>
                             <td class="field-name">Gambar 2</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img id="image2" src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%202.082326.png" 
+                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%202.082326.png" 
                                      alt="Gambar 2" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
                             </td>
                         </tr>
@@ -474,14 +464,14 @@
                         <tr>
                             <td class="field-name">Gambar 3</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img id="image3" src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%203.082327.png" 
+                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%203.082327.png" 
                                      alt="Gambar 3" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
                             </td>
                         </tr>
                         <tr>
                             <td class="field-name">Gambar 4</td>
                             <td style="text-align: center; padding: 20px;">
-                                <img id="image4" src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%204.082328.png" 
+                                <img src="https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%204.082328.png" 
                                      alt="Gambar 4" style="width: 100%; max-width: 400px; height: auto; border-radius: 10px;">
                             </td>
                         </tr>
@@ -537,37 +527,6 @@
             if (!data) data = '-';
             const encodedData = encodeURIComponent(data);
             return `https://api.qrserver.com/v1/create-qr-code/?data=${encodedData}&size=50x50`;
-        }
-
-        // Fungsi untuk memuat gambar dari parameter URL
-        function loadImagesFromUrl() {
-            // Default URLs
-            const defaultUrls = [
-                "https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%201.082325.png",
-                "https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%202.082326.png",
-                "https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%203.082327.png",
-                "https://www.appsheet.com/image/getimageurl?appname=ORDERKERJA-937025984&tableName=FORM%20OK&filename=INPUT_OK_Images%2F26c9bfc9.Foto%204.082328.png"
-            ];
-
-            // Get image URLs from parameters or use defaults
-            const image1Url = getUrlParameter('image1') || getUrlParameter('imageRincianPekerjaan') || defaultUrls[0];
-            const image2Url = getUrlParameter('image2') || defaultUrls[1];
-            const image3Url = getUrlParameter('image3') || defaultUrls[2];
-            const image4Url = getUrlParameter('image4') || defaultUrls[3];
-
-            // Update image src attributes
-            if (image1Url && image1Url.trim() !== '') {
-                document.getElementById('image1').src = image1Url;
-            }
-            if (image2Url && image2Url.trim() !== '') {
-                document.getElementById('image2').src = image2Url;
-            }
-            if (image3Url && image3Url.trim() !== '') {
-                document.getElementById('image3').src = image3Url;
-            }
-            if (image4Url && image4Url.trim() !== '') {
-                document.getElementById('image4').src = image4Url;
-            }
         }
 
         // Fungsi untuk mengatur status checkbox berdasarkan parameter URL
@@ -628,9 +587,6 @@
             // Format status dengan styling
             const statusText = formatStatus(getUrlParameter('status'));
             document.getElementById('status').textContent = statusText;
-
-            // Load images from URL parameters
-            loadImagesFromUrl();
 
             // Set checkbox states
             setCheckboxStates();
