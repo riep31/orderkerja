@@ -324,12 +324,17 @@
             
             <!-- Formula Examples -->
             <div class="formula-example">
-                <div class="formula-title">Contoh Formula Google Sheets untuk membuat URL dengan gambar:</div>
-                <strong>Untuk 1 gambar:</strong><br>
-                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","noOK=",ENCODEURL(A2),"&department=",ENCODEURL(B2),"&nama=",ENCODEURL(C2),"&image1=",ENCODEURL(D2))
+                <div class="formula-title">Contoh Formula AppSheet untuk membuat URL dengan gambar:</div>
+                <strong>Untuk AppSheet (perhatikan tanda koma):</strong><br>
+                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","image1=",ENCODEURL([Url Img]))
                 <br><br>
-                <strong>Untuk semua parameter lengkap:</strong><br>
-                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","noOK=",ENCODEURL(A2),"&department=",ENCODEURL(B2),"&nama=",ENCODEURL(C2),"&namaKerja=",ENCODEURL(D2),"&jenisKerja=",ENCODEURL(E2),"&waktuKerja=",ENCODEURL(F2),"&rincianKerja=",ENCODEURL(G2),"&koreksi=",ENCODEURL(H2),"&rootCause=",ENCODEURL(I2),"&correctiveAction=",ENCODEURL(J2),"&targetSelesai=",ENCODEURL(K2),"&actualSelesai=",ENCODEURL(L2),"&status=",ENCODEURL(M2),"&image1=",ENCODEURL(N2),"&image2=",ENCODEURL(O2),"&image3=",ENCODEURL(P2),"&image4=",ENCODEURL(Q2))
+                <strong>Dengan multiple parameters:</strong><br>
+                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","noOK=",ENCODEURL([No OK]),"&department=",ENCODEURL([Department]),"&nama=",ENCODEURL([Nama]),"&image1=",ENCODEURL([Url Img]))
+                <br><br>
+                <strong>Google Sheets version:</strong><br>
+                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","image1=",ENCODEURL(A2))
+                <br><br>
+                <div style="color: red; font-weight: bold;">⚠️ Pastikan URL gambar dapat diakses publik (tidak memerlukan login)</div>
             </div>
         </div>
 
@@ -575,6 +580,7 @@
         // Enhanced JavaScript for URL parameter handling and image management
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
+            console.log('All URL params:', urlParams.toString());
             
             // Get all parameters
             const params = {
@@ -597,11 +603,20 @@
                 'status': urlParams.get('status') || '-'
             };
 
-            // Function to handle image loading
+            console.log('Parsed params:', params);
+
+            // Function to handle image loading with debugging
             function setupImage(imageId, imageUrl) {
-                if (!imageUrl) return;
+                console.log(`Setting up ${imageId} with URL:`, imageUrl);
+                
+                if (!imageUrl) {
+                    console.log(`No URL provided for ${imageId}`);
+                    return;
+                }
                 
                 const decodedUrl = decodeURIComponent(imageUrl);
+                console.log(`Decoded URL for ${imageId}:`, decodedUrl);
+                
                 const imgElement = document.getElementById(imageId);
                 const containerElement = document.getElementById(imageId + '-container');
                 const bgElement = document.getElementById(imageId + '-bg');
@@ -612,12 +627,15 @@
                     
                     // Set up image load handlers
                     imgElement.onload = function() {
+                        console.log(`${imageId} loaded successfully`);
                         containerElement.classList.remove('loading');
                         containerElement.classList.add('has-image');
                     };
                     
                     imgElement.onerror = function() {
+                        console.log(`${imageId} failed to load, trying background method`);
                         containerElement.classList.remove('loading');
+                        
                         // Try background method as fallback
                         if (bgElement) {
                             bgElement.style.backgroundImage = `url('${decodedUrl}')`;
@@ -628,6 +646,8 @@
                     
                     // Set the image source
                     imgElement.src = decodedUrl;
+                } else {
+                    console.log(`Elements not found for ${imageId}`);
                 }
             }
 
