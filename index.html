@@ -325,16 +325,17 @@
             <!-- Formula Examples -->
             <div class="formula-example">
                 <div class="formula-title">Contoh Formula AppSheet untuk membuat URL dengan gambar:</div>
-                <strong>Untuk AppSheet (perhatikan tanda koma):</strong><br>
+                <strong>AppSheet dengan Image field:</strong><br>
+                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","image1=",ENCODEURL(JSON([Url Img])))
+                <br><br>
+                <strong>Atau jika field sudah dalam format URL:</strong><br>
                 =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","image1=",ENCODEURL([Url Img]))
                 <br><br>
                 <strong>Dengan multiple parameters:</strong><br>
-                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","noOK=",ENCODEURL([No OK]),"&department=",ENCODEURL([Department]),"&nama=",ENCODEURL([Nama]),"&image1=",ENCODEURL([Url Img]))
+                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","noOK=",ENCODEURL([No OK]),"&department=",ENCODEURL([Department]),"&nama=",ENCODEURL([Nama]),"&image1=",ENCODEURL(JSON([Url Img])))
                 <br><br>
-                <strong>Google Sheets version:</strong><br>
-                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","image1=",ENCODEURL(A2))
-                <br><br>
-                <div style="color: red; font-weight: bold;">⚠️ Pastikan URL gambar dapat diakses publik (tidak memerlukan login)</div>
+                <div style="color: blue; font-weight: bold;">💡 Kode sudah diperbaiki untuk menangani format AppSheet JSON</div>
+                <div style="color: red; font-weight: bold;">⚠️ Pastikan AppSheet image bisa diakses publik</div>
             </div>
         </div>
 
@@ -605,6 +606,25 @@
 
             console.log('Parsed params:', params);
 
+            // Function to extract URL from AppSheet format
+            function extractUrlFromAppSheetFormat(urlData) {
+                if (!urlData) return '';
+                
+                // If it's already a plain URL string
+                if (typeof urlData === 'string' && !urlData.startsWith('{')) {
+                    return urlData;
+                }
+                
+                try {
+                    // Try to parse as JSON (AppSheet format)
+                    const parsed = JSON.parse(urlData);
+                    return parsed.Url || parsed.LinkText || '';
+                } catch (e) {
+                    // If parsing fails, treat as string
+                    return urlData;
+                }
+            }
+
             // Function to handle image loading with debugging
             function setupImage(imageId, imageUrl) {
                 console.log(`Setting up ${imageId} with URL:`, imageUrl);
@@ -614,8 +634,17 @@
                     return;
                 }
                 
+                // First decode URI, then extract URL from AppSheet format
                 const decodedUrl = decodeURIComponent(imageUrl);
                 console.log(`Decoded URL for ${imageId}:`, decodedUrl);
+                
+                const actualUrl = extractUrlFromAppSheetFormat(decodedUrl);
+                console.log(`Extracted actual URL for ${imageId}:`, actualUrl);
+                
+                if (!actualUrl) {
+                    console.log(`No valid URL extracted for ${imageId}`);
+                    return;
+                }
                 
                 const imgElement = document.getElementById(imageId);
                 const containerElement = document.getElementById(imageId + '-container');
@@ -638,14 +667,19 @@
                         
                         // Try background method as fallback
                         if (bgElement) {
-                            bgElement.style.backgroundImage = `url('${decodedUrl}')`;
+                            bgElement.style.backgroundImage = `url('${actualUrl}')`;
                             bgElement.classList.add('has-bg-image');
                             containerElement.style.display = 'none';
+                            
+                            // Test if background image loads
+                            setTimeout(() => {
+                                console.log(`Background method attempted for ${imageId}`);
+                            }, 1000);
                         }
                     };
                     
-                    // Set the image source
-                    imgElement.src = decodedUrl;
+                    // Set the image source with actual URL
+                    imgElement.src = actualUrl;
                 } else {
                     console.log(`Elements not found for ${imageId}`);
                 }
