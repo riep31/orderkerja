@@ -240,7 +240,7 @@
             border-radius: 10px;
             background-color: #f8f9fa;
             position: relative;
-            display: none; /* Hide by default, show via JavaScript if needed */
+            display: none;
         }
 
         .bg-image-container.has-bg-image {
@@ -267,6 +267,25 @@
         .status-completed::after { color: #28a745; font-weight: bold; }
         .status-in-progress::after { color: #ffc107; font-weight: bold; }
         .status-pending::after { color: #dc3545; font-weight: bold; }
+
+        /* Checkbox styling */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dynamic-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #4CAF50;
+        }
+
+        .checkbox-label {
+            cursor: pointer;
+            font-weight: normal;
+            flex: 1;
+        }
 
         /* Formula example display */
         .formula-example {
@@ -297,7 +316,7 @@
                 margin: 0;
                 padding: 0;
             }
-            .buttons, .info-section, .formula-example {
+            .buttons {
                 display: none;
             }
             
@@ -318,26 +337,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- Info Section -->
-        <div class="info-section">
-            <h4>Form Order Kerja - PT. DAGSAP ENDURA EATORE</h4>
-            
-            <!-- Formula Examples -->
-            <div class="formula-example">
-                <div class="formula-title">Contoh Formula AppSheet untuk membuat URL dengan gambar:</div>
-                <strong>AppSheet dengan Image field:</strong><br>
-                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","image1=",ENCODEURL(JSON([Url Img])))
-                <br><br>
-                <strong>Atau jika field sudah dalam format URL:</strong><br>
-                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","image1=",ENCODEURL([Url Img]))
-                <br><br>
-                <strong>Dengan multiple parameters:</strong><br>
-                =CONCATENATE("https://riep31.github.io/orderkerja/index.html?","noOK=",ENCODEURL([No OK]),"&department=",ENCODEURL([Department]),"&nama=",ENCODEURL([Nama]),"&image1=",ENCODEURL(JSON([Url Img])))
-                <br><br>
-                <div style="color: blue; font-weight: bold;">💡 Kode sudah diperbaiki untuk menangani format AppSheet JSON</div>
-                <div style="color: red; font-weight: bold;">⚠️ Pastikan AppSheet image bisa diakses publik</div>
-            </div>
-        </div>
+
 
         <!-- Form Preview - Halaman 1 -->
         <div id="printArea">
@@ -437,26 +437,26 @@
                 <tbody>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" style="width: 18px; height: 18px;" disabled>
+                            <input type="checkbox" id="check1" class="dynamic-checkbox" disabled>
                         </td>
                         <td>
-                            <label style="cursor: pointer; font-weight: normal;">Cek kebersihan mesin dan area mesin oleh QC</label>
+                            <label for="check1" class="checkbox-label">Cek kebersihan mesin dan area mesin oleh QC</label>
                         </td>
                     </tr>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" style="width: 18px; height: 18px;" disabled>
+                            <input type="checkbox" id="check2" class="dynamic-checkbox" disabled>
                         </td>
                         <td>
-                            <label style="cursor: pointer; font-weight: normal;">Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi</label>
+                            <label for="check2" class="checkbox-label">Cek kelengkapan mesin dan kelengkapan alat oleh operator produksi dan teknisi</label>
                         </td>
                     </tr>
                     <tr>
                         <td style="width: 50px; text-align: center; vertical-align: middle;">
-                            <input type="checkbox" style="width: 18px; height: 18px;" disabled>
+                            <input type="checkbox" id="check3" class="dynamic-checkbox" disabled>
                         </td>
                         <td>
-                            <label style="cursor: pointer; font-weight: normal;">Serah terima mesin oleh teknisi kepada operator produksi</label>
+                            <label for="check3" class="checkbox-label">Serah terima mesin oleh teknisi kepada operator produksi</label>
                         </td>
                     </tr>
                 </tbody>
@@ -472,32 +472,28 @@
                     </tr>
                     <tr class="signature-row">
                         <td>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Diterima%20Oleh" 
-                                 alt="QR Code Diterima" class="qr-code">
+                            <img id="qr1" class="qr-code" alt="QR Code Diterima">
                         </td>
                         <td>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Menyetujui" 
-                                 alt="QR Code Menyetujui" class="qr-code">
+                            <img id="qr2" class="qr-code" alt="QR Code Menyetujui">
                         </td>
                         <td>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Pelaksana" 
-                                 alt="QR Code Pelaksana" class="qr-code">
+                            <img id="qr3" class="qr-code" alt="QR Code Pelaksana">
                         </td>
                         <td>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=Diketahui" 
-                                 alt="QR Code Diketahui" class="qr-code">
+                            <img id="qr4" class="qr-code" alt="QR Code Diketahui">
                         </td>
                     </tr>
                     <tr class="name-row">
-                        <td class="attr-display" data-value="-">-<br>-</td>
-                        <td class="attr-display" data-value="-">-<br>-</td>
-                        <td class="attr-display" data-value="-">-<br>-</td>
-                        <td class="attr-display" data-value="-">-<br>-</td>
+                        <td id="name1" class="attr-display" data-value="-">-<br>-</td>
+                        <td id="name2" class="attr-display" data-value="-">-<br>-</td>
+                        <td id="name3" class="attr-display" data-value="-">-<br>-</td>
+                        <td id="name4" class="attr-display" data-value="-">-<br>-</td>
                     </tr>
                 </tbody>
             </table>
 
-            <!-- Halaman 2: Gambar 1 dan 2 - Enhanced Version -->
+            <!-- Halaman 2: Gambar 1 dan 2 -->
             <div class="page-break">
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 2</div>
                 <table class="body-table">
@@ -510,7 +506,6 @@
                                     <div class="image-placeholder">Tidak ada gambar 1 tersedia</div>
                                 </div>
                                 
-                                <!-- Alternative background method (hidden by default) -->
                                 <div id="image1-bg" class="bg-image-container">
                                     <div class="image-placeholder">Tidak ada gambar 1 tersedia</div>
                                 </div>
@@ -574,14 +569,14 @@
             <button class="btn" onclick="window.print()">Print Form</button>
             <button class="btn btn-success" onclick="exportToPDF()">Export PDF</button>
             <button class="btn btn-warning" onclick="downloadWord()">Download Word</button>
+            <button class="btn" onclick="testCheckboxes()">Test Checkboxes</button>
         </div>
     </div>
 
     <script>
-        // Enhanced JavaScript for URL parameter handling and image management
+        // Enhanced JavaScript for URL parameter handling
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
-            console.log('All URL params:', urlParams.toString());
             
             // Get all parameters
             const params = {
@@ -601,87 +596,131 @@
                 'correctiveAction': urlParams.get('correctiveAction') || '-',
                 'targetSelesai': urlParams.get('targetSelesai') || '-',
                 'actualSelesai': urlParams.get('actualSelesai') || '-',
-                'status': urlParams.get('status') || '-'
+                'status': urlParams.get('status') || '-',
+                'check1': urlParams.get('check1') || 'false',
+                'check2': urlParams.get('check2') || 'false',
+                'check3': urlParams.get('check3') || 'false',
+                'sig1': urlParams.get('sig1') || '',
+                'sig2': urlParams.get('sig2') || '',
+                'sig3': urlParams.get('sig3') || '',
+                'sig4': urlParams.get('sig4') || ''
             };
 
-            console.log('Parsed params:', params);
+            // Function to handle checkbox state
+            function setupCheckbox(checkboxId, paramValue) {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox) {
+                    const isChecked = paramValue.toLowerCase() === 'true' || paramValue === '1';
+                    checkbox.checked = isChecked;
+                }
+            }
+
+            // Setup all checkboxes
+            setupCheckbox('check1', params.check1);
+            setupCheckbox('check2', params.check2);
+            setupCheckbox('check3', params.check3);
+
+            // Function to setup QR code with signature data
+            function setupQRCode(qrId, nameId, signatureData) {
+                const qrElement = document.getElementById(qrId);
+                const nameElement = document.getElementById(nameId);
+                
+                if (signatureData && signatureData !== '') {
+                    const decodedSignature = decodeURIComponent(signatureData);
+                    const qrData = encodeURIComponent(decodedSignature);
+                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${qrData}`;
+                    
+                    if (qrElement) {
+                        qrElement.src = qrUrl;
+                        qrElement.onerror = function() {
+                            const defaultNames = {
+                                'qr1': 'Diterima%20Oleh',
+                                'qr2': 'Menyetujui',
+                                'qr3': 'Pelaksana',
+                                'qr4': 'Diketahui'
+                            };
+                            qrElement.src = `https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${defaultNames[qrId] || 'Signature'}`;
+                        };
+                    }
+                    
+                    if (nameElement) {
+                        const parts = decodedSignature.split(' - ');
+                        let displayText;
+                        if (parts.length >= 2) {
+                            displayText = `${parts[0]}<br>${parts[1]}`;
+                        } else {
+                            displayText = decodedSignature.replace(/\s+/g, '<br>');
+                        }
+                        nameElement.setAttribute('data-value', displayText);
+                        nameElement.innerHTML = displayText;
+                    }
+                } else {
+                    if (qrElement) {
+                        const defaultNames = {
+                            'qr1': 'Diterima%20Oleh',
+                            'qr2': 'Menyetujui',
+                            'qr3': 'Pelaksana',
+                            'qr4': 'Diketahui'
+                        };
+                        qrElement.src = `https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${defaultNames[qrId] || 'Signature'}`;
+                    }
+                }
+            }
+
+            // Setup all QR codes and signatures
+            setupQRCode('qr1', 'name1', params.sig1);
+            setupQRCode('qr2', 'name2', params.sig2);
+            setupQRCode('qr3', 'name3', params.sig3);
+            setupQRCode('qr4', 'name4', params.sig4);
 
             // Function to extract URL from AppSheet format
             function extractUrlFromAppSheetFormat(urlData) {
                 if (!urlData) return '';
                 
-                // If it's already a plain URL string
                 if (typeof urlData === 'string' && !urlData.startsWith('{')) {
                     return urlData;
                 }
                 
                 try {
-                    // Try to parse as JSON (AppSheet format)
                     const parsed = JSON.parse(urlData);
                     return parsed.Url || parsed.LinkText || '';
                 } catch (e) {
-                    // If parsing fails, treat as string
                     return urlData;
                 }
             }
 
-            // Function to handle image loading with debugging
+            // Function to handle image loading
             function setupImage(imageId, imageUrl) {
-                console.log(`Setting up ${imageId} with URL:`, imageUrl);
+                if (!imageUrl) return;
                 
-                if (!imageUrl) {
-                    console.log(`No URL provided for ${imageId}`);
-                    return;
-                }
-                
-                // First decode URI, then extract URL from AppSheet format
                 const decodedUrl = decodeURIComponent(imageUrl);
-                console.log(`Decoded URL for ${imageId}:`, decodedUrl);
-                
                 const actualUrl = extractUrlFromAppSheetFormat(decodedUrl);
-                console.log(`Extracted actual URL for ${imageId}:`, actualUrl);
                 
-                if (!actualUrl) {
-                    console.log(`No valid URL extracted for ${imageId}`);
-                    return;
-                }
+                if (!actualUrl) return;
                 
                 const imgElement = document.getElementById(imageId);
                 const containerElement = document.getElementById(imageId + '-container');
                 const bgElement = document.getElementById(imageId + '-bg');
                 
                 if (imgElement && containerElement) {
-                    // Show loading state
                     containerElement.classList.add('loading');
                     
-                    // Set up image load handlers
                     imgElement.onload = function() {
-                        console.log(`${imageId} loaded successfully`);
                         containerElement.classList.remove('loading');
                         containerElement.classList.add('has-image');
                     };
                     
                     imgElement.onerror = function() {
-                        console.log(`${imageId} failed to load, trying background method`);
                         containerElement.classList.remove('loading');
                         
-                        // Try background method as fallback
                         if (bgElement) {
                             bgElement.style.backgroundImage = `url('${actualUrl}')`;
                             bgElement.classList.add('has-bg-image');
                             containerElement.style.display = 'none';
-                            
-                            // Test if background image loads
-                            setTimeout(() => {
-                                console.log(`Background method attempted for ${imageId}`);
-                            }, 1000);
                         }
                     };
                     
-                    // Set the image source with actual URL
                     imgElement.src = actualUrl;
-                } else {
-                    console.log(`Elements not found for ${imageId}`);
                 }
             }
 
@@ -700,7 +739,6 @@
                     const decodedValue = decodeURIComponent(params[paramKeys[index]]);
                     element.setAttribute('data-value', decodedValue);
                     
-                    // Add status styling if this is the status field
                     if (paramKeys[index] === 'status') {
                         const status = decodedValue.toLowerCase();
                         if (status.includes('selesai') || status.includes('completed')) {
@@ -717,17 +755,22 @@
 
         // Additional utility functions
         function exportToPDF() {
-            // This would require a PDF library like jsPDF in a real implementation
             alert('Export PDF memerlukan implementasi library PDF. Gunakan Print untuk saat ini.');
             window.print();
         }
 
         function downloadWord() {
-            // This would require a Word export library in a real implementation
             alert('Export Word memerlukan implementasi khusus. Gunakan Print atau copy content untuk saat ini.');
         }
 
-        // Function to generate test URL (for development)
+        // Function to test checkboxes and signatures (for development)
+        function testCheckboxes() {
+            const baseUrl = window.location.origin + window.location.pathname;
+            const testUrl = `${baseUrl}?noOK=OK-001&department=Maintenance&nama=John%20Doe&check1=true&check2=false&check3=true&sig1=John%20Doe%20-%20Manager%20Maintenance&sig2=Jane%20Smith%20-%20Supervisor%20QC&sig3=Mike%20Johnson%20-%20Teknisi%20Senior&sig4=Sarah%20Brown%20-%20Plant%20Manager`;
+            window.open(testUrl, '_blank');
+        }
+
+        // Function to generate test URL with checkboxes (for development)
         function generateTestURL() {
             const baseUrl = window.location.origin + window.location.pathname;
             const testParams = {
@@ -744,6 +787,13 @@
                 targetSelesai: '2024-01-20',
                 actualSelesai: '2024-01-19',
                 status: 'Completed',
+                check1: 'true',
+                check2: 'false',
+                check3: 'true',
+                sig1: 'John Doe - Manager Maintenance',
+                sig2: 'Jane Smith - Supervisor QC',
+                sig3: 'Mike Johnson - Teknisi Senior',
+                sig4: 'Sarah Brown - Plant Manager',
                 image1: 'https://via.placeholder.com/400x300/0066cc/ffffff?text=Before',
                 image2: 'https://via.placeholder.com/400x300/00cc66/ffffff?text=After',
                 image3: 'https://via.placeholder.com/400x300/cc6600/ffffff?text=Process',
@@ -758,7 +808,21 @@
         }
 
         // Add test URL to console for development
-        console.log('Test URL:', generateTestURL());
+        console.log('Test URL with checkboxes:', generateTestURL());
+
+        // Function to get current checkbox states (useful for debugging)
+        function getCurrentCheckboxStates() {
+            return {
+                check1: document.getElementById('check1')?.checked || false,
+                check2: document.getElementById('check2')?.checked || false,
+                check3: document.getElementById('check3')?.checked || false
+            };
+        }
+
+        // Log current checkbox states
+        setTimeout(() => {
+            console.log('Current checkbox states:', getCurrentCheckboxStates());
+        }, 100);
     </script>
 </body>
 </html>
