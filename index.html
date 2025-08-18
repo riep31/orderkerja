@@ -101,7 +101,7 @@
         .footer-table td {
             text-align: center;
             vertical-align: middle;
-            width: 25%;
+            width: 20%;
             height: 50px;
             font-weight: bold;
             background-color: #fff;
@@ -304,6 +304,25 @@
             margin-bottom: 5px;
         }
 
+        /* URL Parameter display */
+        .param-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+
+        .param-code {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 11px;
+            margin: 5px 0;
+            word-break: break-all;
+        }
+
         @media print {
             body {
                 background-color: white;
@@ -316,7 +335,7 @@
                 margin: 0;
                 padding: 0;
             }
-            .buttons {
+            .buttons, .param-info {
                 display: none;
             }
             
@@ -338,6 +357,22 @@
 <body>
     <div class="container">
 
+        <!-- Parameter Information -->
+        <div class="param-info">
+            <h4>📋 URL Parameters untuk AppSheet</h4>
+            <p><strong>Untuk mengisi data tanda tangan (name1-name5), gunakan parameter berikut:</strong></p>
+            <div class="param-code">
+                name1=Nama%20Person%201%20-%20Jabatan%201<br>
+                name2=Nama%20Person%202%20-%20Jabatan%202<br>
+                name3=Nama%20Person%203%20-%20Jabatan%203<br>
+                name4=Nama%20Person%204%20-%20Jabatan%204<br>
+                name5=Nama%20Person%205%20-%20Jabatan%205
+            </div>
+            <p><strong>Contoh URL lengkap:</strong></p>
+            <div class="param-code" id="example-url">
+                [URL akan di-generate secara otomatis]
+            </div>
+        </div>
 
         <!-- Form Preview - Halaman 1 -->
         <div id="printArea">
@@ -465,14 +500,15 @@
             <table class="footer-table">
                 <tbody>
                     <tr>
-                        <td>Diterima Oleh</td>
+                        <td>Diminta Oleh</td>
                         <td>Menyetujui</td>
                         <td>Pelaksana</td>
                         <td>Diketahui</td>
+                        <td>Diterima Oleh</td>
                     </tr>
                     <tr class="signature-row">
                         <td>
-                            <img id="qr1" class="qr-code" alt="QR Code Diterima">
+                            <img id="qr1" class="qr-code" alt="QR Code Diminta Oleh">
                         </td>
                         <td>
                             <img id="qr2" class="qr-code" alt="QR Code Menyetujui">
@@ -483,12 +519,16 @@
                         <td>
                             <img id="qr4" class="qr-code" alt="QR Code Diketahui">
                         </td>
+                        <td>
+                            <img id="qr5" class="qr-code" alt="QR Code Diterima Oleh">
+                        </td>
                     </tr>
                     <tr class="name-row">
-                        <td id="name1" class="attr-display" data-value="-">-<br>-</td>
-                        <td id="name2" class="attr-display" data-value="-">-<br>-</td>
-                        <td id="name3" class="attr-display" data-value="-">-<br>-</td>
-                        <td id="name4" class="attr-display" data-value="-">-<br>-</td>
+                        <td id="name1">-<br>-</td>
+                        <td id="name2">-<br>-</td>
+                        <td id="name3">-<br>-</td>
+                        <td id="name4">-<br>-</td>
+                        <td id="name5">-<br>-</td>
                     </tr>
                 </tbody>
             </table>
@@ -569,16 +609,17 @@
             <button class="btn" onclick="window.print()">Print Form</button>
             <button class="btn btn-success" onclick="exportToPDF()">Export PDF</button>
             <button class="btn btn-warning" onclick="downloadWord()">Download Word</button>
-            <button class="btn" onclick="testCheckboxes()">Test Checkboxes</button>
+            <button class="btn" onclick="testWithNames()">Test dengan Names</button>
+            <button class="btn" onclick="copyExampleURL()">Copy Example URL</button>
         </div>
     </div>
 
     <script>
-        // Enhanced JavaScript for URL parameter handling
+        // Enhanced JavaScript for URL parameter handling with name parameters
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             
-            // Get all parameters
+            // Get all parameters including name parameters
             const params = {
                 'image1': urlParams.get('image1') || '',
                 'image2': urlParams.get('image2') || '',
@@ -603,7 +644,14 @@
                 'sig1': urlParams.get('sig1') || '',
                 'sig2': urlParams.get('sig2') || '',
                 'sig3': urlParams.get('sig3') || '',
-                'sig4': urlParams.get('sig4') || ''
+                'sig4': urlParams.get('sig4') || '',
+                'sig5': urlParams.get('sig5') || '',
+                // New name parameters
+                'name1': urlParams.get('name1') || '',
+                'name2': urlParams.get('name2') || '',
+                'name3': urlParams.get('name3') || '',
+                'name4': urlParams.get('name4') || '',
+                'name5': urlParams.get('name5') || ''
             };
 
             // Function to handle checkbox state
@@ -621,9 +669,8 @@
             setupCheckbox('check3', params.check3);
 
             // Function to setup QR code with signature data
-            function setupQRCode(qrId, nameId, signatureData) {
+            function setupQRCode(qrId, signatureData) {
                 const qrElement = document.getElementById(qrId);
-                const nameElement = document.getElementById(nameId);
                 
                 if (signatureData && signatureData !== '') {
                     const decodedSignature = decodeURIComponent(signatureData);
@@ -634,44 +681,74 @@
                         qrElement.src = qrUrl;
                         qrElement.onerror = function() {
                             const defaultNames = {
-                                'qr1': 'Diterima%20Oleh',
+                                'qr1': 'Diminta%20Oleh',
                                 'qr2': 'Menyetujui',
                                 'qr3': 'Pelaksana',
-                                'qr4': 'Diketahui'
+                                'qr4': 'Diketahui',
+                                'qr5': 'Diterima%20Oleh'
                             };
                             qrElement.src = `https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${defaultNames[qrId] || 'Signature'}`;
                         };
                     }
-                    
-                    if (nameElement) {
-                        const parts = decodedSignature.split(' - ');
-                        let displayText;
-                        if (parts.length >= 2) {
-                            displayText = `${parts[0]}<br>${parts[1]}`;
-                        } else {
-                            displayText = decodedSignature.replace(/\s+/g, '<br>');
-                        }
-                        nameElement.setAttribute('data-value', displayText);
-                        nameElement.innerHTML = displayText;
-                    }
                 } else {
                     if (qrElement) {
                         const defaultNames = {
-                            'qr1': 'Diterima%20Oleh',
+                            'qr1': 'Diminta%20Oleh',
                             'qr2': 'Menyetujui',
                             'qr3': 'Pelaksana',
-                            'qr4': 'Diketahui'
+                            'qr4': 'Diketahui',
+                            'qr5': 'Diterima%20Oleh'
                         };
                         qrElement.src = `https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${defaultNames[qrId] || 'Signature'}`;
                     }
                 }
             }
 
-            // Setup all QR codes and signatures
-            setupQRCode('qr1', 'name1', params.sig1);
-            setupQRCode('qr2', 'name2', params.sig2);
-            setupQRCode('qr3', 'name3', params.sig3);
-            setupQRCode('qr4', 'name4', params.sig4);
+            // Function to setup name display with priority: name parameter > sig parameter
+            function setupNameDisplay(nameId, nameParam, sigParam) {
+                const nameElement = document.getElementById(nameId);
+                
+                if (nameElement) {
+                    let displayText = '-<br>-';
+                    
+                    // Priority 1: Use name parameter if available
+                    if (nameParam && nameParam !== '') {
+                        const decodedName = decodeURIComponent(nameParam);
+                        const parts = decodedName.split(' - ');
+                        if (parts.length >= 2) {
+                            displayText = `${parts[0]}<br>${parts[1]}`;
+                        } else {
+                            displayText = decodedName.replace(/\s+/g, '<br>');
+                        }
+                    } 
+                    // Priority 2: Use sig parameter if name not available
+                    else if (sigParam && sigParam !== '') {
+                        const decodedSig = decodeURIComponent(sigParam);
+                        const parts = decodedSig.split(' - ');
+                        if (parts.length >= 2) {
+                            displayText = `${parts[0]}<br>${parts[1]}`;
+                        } else {
+                            displayText = decodedSig.replace(/\s+/g, '<br>');
+                        }
+                    }
+                    
+                    nameElement.innerHTML = displayText;
+                }
+            }
+
+            // Setup all QR codes
+            setupQRCode('qr1', params.sig1 || params.name1);
+            setupQRCode('qr2', params.sig2 || params.name2);
+            setupQRCode('qr3', params.sig3 || params.name3);
+            setupQRCode('qr4', params.sig4 || params.name4);
+            setupQRCode('qr5', params.sig5 || params.name5);
+
+            // Setup all name displays
+            setupNameDisplay('name1', params.name1, params.sig1);
+            setupNameDisplay('name2', params.name2, params.sig2);
+            setupNameDisplay('name3', params.name3, params.sig3);
+            setupNameDisplay('name4', params.name4, params.sig4);
+            setupNameDisplay('name5', params.name5, params.sig5);
 
             // Function to extract URL from AppSheet format
             function extractUrlFromAppSheetFormat(urlData) {
@@ -751,6 +828,50 @@
                     }
                 }
             });
+
+            // Generate and display example URL
+            function generateExampleURL() {
+                const baseUrl = window.location.origin + window.location.pathname;
+                const exampleParams = {
+                    noOK: 'OK-2024-001',
+                    department: 'Maintenance',
+                    nama: 'John Doe',
+                    namaKerja: 'Perbaikan Mesin Produksi A',
+                    jenisKerja: 'Preventive Maintenance',
+                    waktuKerja: '2024-08-19 08:00',
+                    rincianKerja: 'Penggantian bearing dan pembersihan komponen internal mesin',
+                    koreksi: 'Diperlukan perbaikan segera pada bearing utama',
+                    rootCause: 'Kurangnya maintenance rutin dan pelumasan',
+                    correctiveAction: 'Implementasi jadwal maintenance berkala dan training operator',
+                    targetSelesai: '2024-08-20',
+                    actualSelesai: '2024-08-19',
+                    status: 'Completed',
+                    check1: 'true',
+                    check2: 'true',
+                    check3: 'false',
+                    name1: 'Budi Santoso - Manager Maintenance',
+                    name2: 'Siti Rahma - Supervisor QC',
+                    name3: 'Ahmad Rahman - Teknisi Senior',
+                    name4: 'Maya Sari - Plant Manager',
+                    name5: 'Doni Pratama - Operator Produksi',
+                    image1: 'https://via.placeholder.com/400x300/0066cc/ffffff?text=Before+Maintenance',
+                    image2: 'https://via.placeholder.com/400x300/00cc66/ffffff?text=After+Maintenance',
+                    image3: 'https://via.placeholder.com/400x300/cc6600/ffffff?text=Process+Photo',
+                    image4: 'https://via.placeholder.com/400x300/cc0066/ffffff?text=Final+Result'
+                };
+                
+                const paramString = Object.keys(exampleParams)
+                    .map(key => `${key}=${encodeURIComponent(exampleParams[key])}`)
+                    .join('&');
+                
+                return `${baseUrl}?${paramString}`;
+            }
+
+            // Display example URL
+            const exampleUrlElement = document.getElementById('example-url');
+            if (exampleUrlElement) {
+                exampleUrlElement.textContent = generateExampleURL();
+            }
         })();
 
         // Additional utility functions
@@ -763,66 +884,165 @@
             alert('Export Word memerlukan implementasi khusus. Gunakan Print atau copy content untuk saat ini.');
         }
 
-        // Function to test checkboxes and signatures (for development)
-        function testCheckboxes() {
+        // Function to test with name parameters
+        function testWithNames() {
             const baseUrl = window.location.origin + window.location.pathname;
-            const testUrl = `${baseUrl}?noOK=OK-001&department=Maintenance&nama=John%20Doe&check1=true&check2=false&check3=true&sig1=John%20Doe%20-%20Manager%20Maintenance&sig2=Jane%20Smith%20-%20Supervisor%20QC&sig3=Mike%20Johnson%20-%20Teknisi%20Senior&sig4=Sarah%20Brown%20-%20Plant%20Manager`;
+            const testUrl = `${baseUrl}?noOK=OK-2024-001&department=Maintenance&nama=John%20Doe&namaKerja=Perbaikan%20Mesin%20A&jenisKerja=Preventive&waktuKerja=2024-08-19%2008:00&rincianKerja=Penggantian%20bearing%20dan%20pembersihan%20komponen&koreksi=Diperlukan%20perbaikan%20segera&rootCause=Kurangnya%20maintenance%20rutin&correctiveAction=Implementasi%20jadwal%20maintenance%20berkala&targetSelesai=2024-08-20&actualSelesai=2024-08-19&status=Completed&check1=true&check2=true&check3=false&name1=Budi%20Santoso%20-%20Manager%20Maintenance&name2=Siti%20Rahma%20-%20Supervisor%20QC&name3=Ahmad%20Rahman%20-%20Teknisi%20Senior&name4=Maya%20Sari%20-%20Plant%20Manager&name5=Doni%20Pratama%20-%20Operator%20Produksi&image1=https://via.placeholder.com/400x300/0066cc/ffffff?text=Before&image2=https://via.placeholder.com/400x300/00cc66/ffffff?text=After&image3=https://via.placeholder.com/400x300/cc6600/ffffff?text=Process&image4=https://via.placeholder.com/400x300/cc0066/ffffff?text=Result`;
             window.open(testUrl, '_blank');
         }
 
-        // Function to generate test URL with checkboxes (for development)
-        function generateTestURL() {
-            const baseUrl = window.location.origin + window.location.pathname;
-            const testParams = {
-                noOK: 'OK-001',
-                department: 'Maintenance',
-                nama: 'John Doe',
-                namaKerja: 'Perbaikan Mesin A',
-                jenisKerja: 'Preventive',
-                waktuKerja: '2024-01-15',
-                rincianKerja: 'Penggantian bearing dan pembersihan komponen',
-                koreksi: 'Diperlukan perbaikan segera',
-                rootCause: 'Kurangnya maintenance rutin',
-                correctiveAction: 'Jadwalkan maintenance berkala',
-                targetSelesai: '2024-01-20',
-                actualSelesai: '2024-01-19',
-                status: 'Completed',
-                check1: 'true',
-                check2: 'false',
-                check3: 'true',
-                sig1: 'John Doe - Manager Maintenance',
-                sig2: 'Jane Smith - Supervisor QC',
-                sig3: 'Mike Johnson - Teknisi Senior',
-                sig4: 'Sarah Brown - Plant Manager',
-                image1: 'https://via.placeholder.com/400x300/0066cc/ffffff?text=Before',
-                image2: 'https://via.placeholder.com/400x300/00cc66/ffffff?text=After',
-                image3: 'https://via.placeholder.com/400x300/cc6600/ffffff?text=Process',
-                image4: 'https://via.placeholder.com/400x300/cc0066/ffffff?text=Result'
-            };
+        // Function to copy example URL to clipboard
+        function copyExampleURL() {
+            const exampleUrl = document.getElementById('example-url').textContent;
             
-            const paramString = Object.keys(testParams)
-                .map(key => `${key}=${encodeURIComponent(testParams[key])}`)
-                .join('&');
-            
-            return `${baseUrl}?${paramString}`;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(exampleUrl).then(() => {
+                    alert('Example URL copied to clipboard!');
+                }).catch(() => {
+                    fallbackCopyTextToClipboard(exampleUrl);
+                });
+            } else {
+                fallbackCopyTextToClipboard(exampleUrl);
+            }
         }
 
-        // Add test URL to console for development
-        console.log('Test URL with checkboxes:', generateTestURL());
+        // Fallback copy function
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('Example URL copied to clipboard!');
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                alert('Unable to copy to clipboard. Please copy manually from the example URL field.');
+            }
+            
+            document.body.removeChild(textArea);
+        }
 
-        // Function to get current checkbox states (useful for debugging)
-        function getCurrentCheckboxStates() {
-            return {
+        // Function to get all current form data as URL parameters
+        function getCurrentFormDataAsURL() {
+            const baseUrl = window.location.origin + window.location.pathname;
+            const currentParams = new URLSearchParams(window.location.search);
+            
+            console.log('Current Form Data URL:', `${baseUrl}?${currentParams.toString()}`);
+            return `${baseUrl}?${currentParams.toString()}`;
+        }
+
+        // AppSheet Integration Helper Functions
+        window.AppSheetHelpers = {
+            // Function to format name parameter for AppSheet
+            formatNameParam: function(fullName, position) {
+                return `${fullName} - ${position}`;
+            },
+            
+            // Function to create URL with all parameters
+            createFormURL: function(data) {
+                const baseUrl = window.location.origin + window.location.pathname;
+                const params = new URLSearchParams();
+                
+                // Add all possible parameters
+                Object.keys(data).forEach(key => {
+                    if (data[key] !== null && data[key] !== undefined && data[key] !== '') {
+                        params.append(key, data[key]);
+                    }
+                });
+                
+                return `${baseUrl}?${params.toString()}`;
+            },
+            
+            // Function to validate name format
+            validateNameFormat: function(nameString) {
+                const parts = nameString.split(' - ');
+                return parts.length >= 2 ? {
+                    valid: true,
+                    name: parts[0],
+                    position: parts[1]
+                } : {
+                    valid: false,
+                    error: 'Format harus: "Nama - Jabatan"'
+                };
+            }
+        };
+
+        // Log current form state for debugging
+        setTimeout(() => {
+            console.log('Form initialized with current parameters');
+            console.log('Current checkbox states:', {
                 check1: document.getElementById('check1')?.checked || false,
                 check2: document.getElementById('check2')?.checked || false,
                 check3: document.getElementById('check3')?.checked || false
-            };
-        }
-
-        // Log current checkbox states
-        setTimeout(() => {
-            console.log('Current checkbox states:', getCurrentCheckboxStates());
+            });
+            console.log('Current name displays:', {
+                name1: document.getElementById('name1')?.innerHTML || '-',
+                name2: document.getElementById('name2')?.innerHTML || '-',
+                name3: document.getElementById('name3')?.innerHTML || '-',
+                name4: document.getElementById('name4')?.innerHTML || '-',
+                name5: document.getElementById('name5')?.innerHTML || '-'
+            });
         }, 100);
+
+        // Add documentation for AppSheet developers
+        console.log(`
+=== APPSHEET INTEGRATION GUIDE ===
+
+URL Parameters untuk Form Order Kerja:
+
+BASIC DATA:
+- noOK: Nomor Order Kerja (contoh: OK-2024-001)
+- department: Departemen (contoh: Maintenance)
+- nama: Nama Penanggung Jawab
+- namaKerja: Nama Sifat Pekerjaan
+- jenisKerja: Jenis Pekerjaan (Preventive/Corrective/Emergency)
+- waktuKerja: Waktu Pengerjaan (format: YYYY-MM-DD HH:mm)
+- rincianKerja: Rincian detail pekerjaan
+- koreksi: Koreksi yang diperlukan
+- rootCause: Root Cause Analysis
+- correctiveAction: Corrective Action
+- targetSelesai: Target selesai (YYYY-MM-DD)
+- actualSelesai: Actual selesai (YYYY-MM-DD)
+- status: Status (Pending/In Progress/Completed)
+
+CHECKBOXES (true/false):
+- check1: Cek kebersihan mesin dan area mesin oleh QC
+- check2: Cek kelengkapan mesin dan kelengkapan alat
+- check3: Serah terima mesin oleh teknisi kepada operator
+
+SIGNATURES & NAMES (format: "Nama - Jabatan"):
+- name1: Diminta Oleh (contoh: "Budi Santoso - Manager Maintenance")
+- name2: Menyetujui (contoh: "Siti Rahma - Supervisor QC")
+- name3: Pelaksana (contoh: "Ahmad Rahman - Teknisi Senior")
+- name4: Diketahui (contoh: "Maya Sari - Plant Manager")
+- name5: Diterima Oleh (contoh: "Doni Pratama - Operator Produksi")
+
+LEGACY SIGNATURES (masih didukung):
+- sig1, sig2, sig3, sig4, sig5: Format sama dengan name1-name5
+
+IMAGES:
+- image1, image2, image3, image4: URL gambar atau format AppSheet
+
+CONTOH APPSHEET ACTION:
+LINKTOFORM("Form Order Kerja", 
+  "noOK", [No OK],
+  "department", [Department],
+  "nama", [Nama],
+  "name1", CONCATENATE([Nama Diminta], " - ", [Jabatan Diminta]),
+  "name2", CONCATENATE([Nama Setuju], " - ", [Jabatan Setuju]),
+  "check1", IF([Cek QC], "true", "false"),
+  "status", [Status Pekerjaan],
+  "image1", [Foto Before],
+  "image2", [Foto After]
+)
+        `);
     </script>
 </body>
 </html>
