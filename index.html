@@ -10,7 +10,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -130,25 +129,21 @@
             margin: 5px auto;
             display: block;
         }
-
         .info-section {
             background-color: #f8f9fa;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
         }
-
         .info-section h4 {
             color: #495057;
             margin-bottom: 10px;
         }
-
         .buttons {
             text-align: center;
             margin: 20px 0;
             gap: 10px;
         }
-
         .btn {
             background-color: #007bff;
             color: white;
@@ -159,29 +154,19 @@
             font-size: 14px;
             margin: 0 5px;
         }
-
         .btn:hover {
             background-color: #0056b3;
         }
-
         .btn-success {
             background-color: #28a745;
         }
-
         .btn-success:hover {
             background-color: #1e7e34;
         }
-
-        .btn-warning {
-            background-color: #ffc107;
-            color: #212529;
+        .btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
         }
-
-        .btn-warning:hover {
-            background-color: #e0a800;
-        }
-
-        /* Enhanced image display system */
         .image-container {
             position: relative;
             width: 400px;
@@ -191,44 +176,31 @@
             border-radius: 10px;
             overflow: hidden;
             background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
         .dynamic-image {
-            width: 100%;
-            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
             display: block;
         }
-
         .image-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             color: #999;
             font-style: italic;
             text-align: center;
             font-size: 14px;
             pointer-events: none;
         }
-
-        /* Hide placeholder when image is loaded */
         .image-container.has-image .image-placeholder {
             display: none;
         }
-
-        /* Show loading indicator */
         .image-container.loading::after {
             content: "Memuat gambar...";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             color: #007bff;
             font-size: 14px;
         }
-
-        /* Alternative background method container */
         .bg-image-container {
             width: 400px;
             height: 300px;
@@ -242,11 +214,9 @@
             position: relative;
             display: none;
         }
-
         .bg-image-container.has-bg-image {
             display: block;
         }
-
         .bg-image-container .image-placeholder {
             position: absolute;
             top: 50%;
@@ -257,62 +227,27 @@
             text-align: center;
             font-size: 14px;
         }
-
-        /* CSS for displaying data from URL parameters */
         .attr-display::after {
             content: attr(data-value);
         }
-
-        /* Status styling */
         .status-completed::after { color: #28a745; font-weight: bold; }
         .status-in-progress::after { color: #ffc107; font-weight: bold; }
         .status-pending::after { color: #dc3545; font-weight: bold; }
-
-        /* Checkbox styling */
         .checkbox-container {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .dynamic-checkbox {
             width: 18px;
             height: 18px;
             accent-color: #4CAF50;
         }
-
         .checkbox-label {
             cursor: pointer;
             font-weight: normal;
             flex: 1;
         }
-
-        /* Formula example display */
-        .formula-example {
-            background-color: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            margin: 10px 0;
-            border-left: 4px solid #007bff;
-        }
-
-        .formula-title {
-            font-weight: bold;
-            color: #495057;
-            margin-bottom: 5px;
-        }
-
-        /* URL Parameter display */
-        .param-info {
-            background-color: #e7f3ff;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #007bff;
-        }
-
         .param-code {
             background-color: #f8f9fa;
             padding: 8px;
@@ -323,57 +258,113 @@
             word-break: break-all;
         }
 
+        /* Enhanced Print Styles for PDF Export */
         @media print {
             body {
-                background-color: white;
+                background-color: white !important;
                 padding: 0;
                 margin: 0;
+                font-size: 12px;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
             }
+            
             .container {
                 box-shadow: none;
                 max-width: none;
                 margin: 0;
                 padding: 0;
+                background-color: white !important;
             }
-            .buttons, .param-info {
-                display: none;
+            
+            .buttons, .info-section {
+                display: none !important;
             }
             
             .body-table tr:nth-child(even) {
-                background-color: white !important;
+                background-color: #f9f9f9 !important;
+            }
+            
+            .field-name {
+                background-color: #e8f5e8 !important;
             }
             
             .page-break {
                 page-break-before: always;
             }
             
+            /* Ensure images fit properly in print */
+            .image-container {
+                width: 350px !important;
+                height: 250px !important;
+                border: 1px solid #000 !important;
+                background-color: white !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                margin: 10px auto !important;
+                page-break-inside: avoid;
+            }
+            
+            .dynamic-image {
+                max-width: 100% !important;
+                max-height: 100% !important;
+                object-fit: contain !important;
+                display: block !important;
+            }
+            
+            .bg-image-container {
+                width: 350px !important;
+                height: 250px !important;
+                border: 1px solid #000 !important;
+                background-color: white !important;
+                margin: 10px auto !important;
+                page-break-inside: avoid;
+            }
+            
+            .bg-image-container.has-bg-image {
+                display: block !important;
+            }
+            
+            /* Ensure proper page layout */
+            .table-title {
+                margin: 15px 0 10px 0 !important;
+                page-break-after: avoid;
+            }
+            
+            table {
+                page-break-inside: avoid;
+                margin-bottom: 15px !important;
+            }
+            
+            /* Image rows should not break */
+            .body-table tr {
+                page-break-inside: avoid;
+            }
+            
+            .body-table td {
+                padding: 15px !important;
+            }
+            
             @page {
                 size: A4;
-                margin: 5mm;
+                margin: 15mm;
             }
+        }
+
+        /* PDF Export specific styles */
+        .pdf-export-mode {
+            background: white !important;
+        }
+        
+        .pdf-export-mode .container {
+            box-shadow: none !important;
+            background: white !important;
         }
     </style>
 </head>
 <body>
     <div class="container">
-
-        <!-- Parameter Information -->
-        <div class="param-info">
-            <h4>📋 URL Parameters untuk AppSheet</h4>
-            <p><strong>Untuk mengisi data tanda tangan (name1-name5), gunakan parameter berikut:</strong></p>
-            <div class="param-code">
-                name1=Nama%20Person%201%20-%20Jabatan%201<br>
-                name2=Nama%20Person%202%20-%20Jabatan%202<br>
-                name3=Nama%20Person%203%20-%20Jabatan%203<br>
-                name4=Nama%20Person%204%20-%20Jabatan%204<br>
-                name5=Nama%20Person%205%20-%20Jabatan%205
-            </div>
-            <p><strong>Contoh URL lengkap:</strong></p>
-            <div class="param-code" id="example-url">
-                [URL akan di-generate secara otomatis]
-            </div>
-        </div>
-
         <!-- Form Preview - Halaman 1 -->
         <div id="printArea">
             <div class="table-title"></div>
@@ -496,7 +487,6 @@
                     </tr>
                 </tbody>
             </table>
-
             <table class="footer-table">
                 <tbody>
                     <tr>
@@ -532,33 +522,31 @@
                     </tr>
                 </tbody>
             </table>
-
+            
             <!-- Halaman 2: Gambar 1 dan 2 -->
             <div class="page-break">
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 2</div>
                 <table class="body-table">
                     <tbody>
                         <tr>
-                            <td class="field-name">Gambar 1</td>
+                            <td class="field-name" style="width: 200px;">Lampiran Foto 1</td>
                             <td style="text-align: center; padding: 20px;">
                                 <div id="image1-container" class="image-container">
-                                    <img id="image1" class="dynamic-image" alt="Gambar 1">
+                                    <img id="image1" class="dynamic-image" alt="Gambar 1" style="display: none;">
                                     <div class="image-placeholder">Tidak ada gambar 1 tersedia</div>
                                 </div>
-                                
                                 <div id="image1-bg" class="bg-image-container">
                                     <div class="image-placeholder">Tidak ada gambar 1 tersedia</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td class="field-name">Gambar 2</td>
+                            <td class="field-name" style="width: 200px;">Lampiran Foto 2</td>
                             <td style="text-align: center; padding: 20px;">
                                 <div id="image2-container" class="image-container">
-                                    <img id="image2" class="dynamic-image" alt="Gambar 2">
+                                    <img id="image2" class="dynamic-image" alt="Gambar 2" style="display: none;">
                                     <div class="image-placeholder">Tidak ada gambar 2 tersedia</div>
                                 </div>
-                                
                                 <div id="image2-bg" class="bg-image-container">
                                     <div class="image-placeholder">Tidak ada gambar 2 tersedia</div>
                                 </div>
@@ -567,33 +555,31 @@
                     </tbody>
                 </table>
             </div>
-
+            
             <!-- Halaman 3: Gambar 3 dan 4 -->
             <div class="page-break">
                 <div class="table-title">Foto Rincian Pekerjaan - Halaman 3</div>
                 <table class="body-table">
                     <tbody>
                         <tr>
-                            <td class="field-name">Gambar 3</td>
+                            <td class="field-name" style="width: 200px;">Foto Sudah Dikerjakan</td>
                             <td style="text-align: center; padding: 20px;">
                                 <div id="image3-container" class="image-container">
-                                    <img id="image3" class="dynamic-image" alt="Gambar 3">
+                                    <img id="image3" class="dynamic-image" alt="Gambar 3" style="display: none;">
                                     <div class="image-placeholder">Tidak ada gambar 3 tersedia</div>
                                 </div>
-                                
                                 <div id="image3-bg" class="bg-image-container">
                                     <div class="image-placeholder">Tidak ada gambar 3 tersedia</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td class="field-name">Gambar 4</td>
+                            <td class="field-name" style="width: 200px;">Foto Cek Kebersihan</td>
                             <td style="text-align: center; padding: 20px;">
                                 <div id="image4-container" class="image-container">
-                                    <img id="image4" class="dynamic-image" alt="Gambar 4">
+                                    <img id="image4" class="dynamic-image" alt="Gambar 4" style="display: none;">
                                     <div class="image-placeholder">Tidak ada gambar 4 tersedia</div>
                                 </div>
-                                
                                 <div id="image4-bg" class="bg-image-container">
                                     <div class="image-placeholder">Tidak ada gambar 4 tersedia</div>
                                 </div>
@@ -603,19 +589,16 @@
                 </table>
             </div>
         </div>
-
+        
         <!-- Buttons -->
         <div class="buttons">
             <button class="btn" onclick="window.print()">Print Form</button>
-            <button class="btn btn-success" onclick="exportToPDF()">Export PDF</button>
-            <button class="btn btn-warning" onclick="downloadWord()">Download Word</button>
-            <button class="btn" onclick="testWithNames()">Test dengan Names</button>
-            <button class="btn" onclick="copyExampleURL()">Copy Example URL</button>
+            <button class="btn btn-success" onclick="exportToPDF()" id="pdfBtn">Export PDF</button>
+            <button class="btn" onclick="exportToPDFAlternative()" style="background-color: #6c757d;">Export PDF (Alternative)</button>
         </div>
     </div>
-
+    
     <script>
-        // Enhanced JavaScript for URL parameter handling with name parameters
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             
@@ -646,7 +629,6 @@
                 'sig3': urlParams.get('sig3') || '',
                 'sig4': urlParams.get('sig4') || '',
                 'sig5': urlParams.get('sig5') || '',
-                // New name parameters
                 'name1': urlParams.get('name1') || '',
                 'name2': urlParams.get('name2') || '',
                 'name3': urlParams.get('name3') || '',
@@ -711,7 +693,6 @@
                 if (nameElement) {
                     let displayText = '-<br>-';
                     
-                    // Priority 1: Use name parameter if available
                     if (nameParam && nameParam !== '') {
                         const decodedName = decodeURIComponent(nameParam);
                         const parts = decodedName.split(' - ');
@@ -720,9 +701,7 @@
                         } else {
                             displayText = decodedName.replace(/\s+/g, '<br>');
                         }
-                    } 
-                    // Priority 2: Use sig parameter if name not available
-                    else if (sigParam && sigParam !== '') {
+                    } else if (sigParam && sigParam !== '') {
                         const decodedSig = decodeURIComponent(sigParam);
                         const parts = decodedSig.split(' - ');
                         if (parts.length >= 2) {
@@ -766,7 +745,7 @@
                 }
             }
 
-            // Function to handle image loading
+            // Enhanced function to handle image loading with better error handling
             function setupImage(imageId, imageUrl) {
                 if (!imageUrl) return;
                 
@@ -778,6 +757,7 @@
                 const imgElement = document.getElementById(imageId);
                 const containerElement = document.getElementById(imageId + '-container');
                 const bgElement = document.getElementById(imageId + '-bg');
+                const placeholderElement = containerElement.querySelector('.image-placeholder');
                 
                 if (imgElement && containerElement) {
                     containerElement.classList.add('loading');
@@ -785,19 +765,39 @@
                     imgElement.onload = function() {
                         containerElement.classList.remove('loading');
                         containerElement.classList.add('has-image');
+                        imgElement.style.display = 'block';
+                        if (placeholderElement) {
+                            placeholderElement.style.display = 'none';
+                        }
+                        console.log(`Image ${imageId} loaded successfully`);
                     };
                     
                     imgElement.onerror = function() {
+                        console.log(`Failed to load ${imageId}, trying background image`);
                         containerElement.classList.remove('loading');
                         
                         if (bgElement) {
                             bgElement.style.backgroundImage = `url('${actualUrl}')`;
                             bgElement.classList.add('has-bg-image');
                             containerElement.style.display = 'none';
+                            
+                            // Test if background image loads
+                            const testImg = new Image();
+                            testImg.onload = function() {
+                                console.log(`Background image ${imageId} loaded successfully`);
+                            };
+                            testImg.onerror = function() {
+                                console.log(`Both regular and background image failed for ${imageId}`);
+                                bgElement.classList.remove('has-bg-image');
+                                containerElement.style.display = 'flex';
+                            };
+                            testImg.src = actualUrl;
                         }
                     };
                     
+                    // Set the image source
                     imgElement.src = actualUrl;
+                    console.log(`Setting up image ${imageId} with URL: ${actualUrl.substring(0, 100)}...`);
                 }
             }
 
@@ -828,129 +828,300 @@
                     }
                 }
             });
-
-            // Generate and display example URL
-            function generateExampleURL() {
-                const baseUrl = window.location.origin + window.location.pathname;
-                const exampleParams = {
-                    noOK: 'OK-2024-001',
-                    department: 'Maintenance',
-                    nama: 'John Doe',
-                    namaKerja: 'Perbaikan Mesin Produksi A',
-                    jenisKerja: 'Preventive Maintenance',
-                    waktuKerja: '2024-08-19 08:00',
-                    rincianKerja: 'Penggantian bearing dan pembersihan komponen internal mesin',
-                    koreksi: 'Diperlukan perbaikan segera pada bearing utama',
-                    rootCause: 'Kurangnya maintenance rutin dan pelumasan',
-                    correctiveAction: 'Implementasi jadwal maintenance berkala dan training operator',
-                    targetSelesai: '2024-08-20',
-                    actualSelesai: '2024-08-19',
-                    status: 'Completed',
-                    check1: 'true',
-                    check2: 'true',
-                    check3: 'false',
-                    name1: 'Budi Santoso - Manager Maintenance',
-                    name2: 'Siti Rahma - Supervisor QC',
-                    name3: 'Ahmad Rahman - Teknisi Senior',
-                    name4: 'Maya Sari - Plant Manager',
-                    name5: 'Doni Pratama - Operator Produksi',
-                    image1: 'https://via.placeholder.com/400x300/0066cc/ffffff?text=Before+Maintenance',
-                    image2: 'https://via.placeholder.com/400x300/00cc66/ffffff?text=After+Maintenance',
-                    image3: 'https://via.placeholder.com/400x300/cc6600/ffffff?text=Process+Photo',
-                    image4: 'https://via.placeholder.com/400x300/cc0066/ffffff?text=Final+Result'
-                };
-                
-                const paramString = Object.keys(exampleParams)
-                    .map(key => `${key}=${encodeURIComponent(exampleParams[key])}`)
-                    .join('&');
-                
-                return `${baseUrl}?${paramString}`;
-            }
-
-            // Display example URL
-            const exampleUrlElement = document.getElementById('example-url');
-            if (exampleUrlElement) {
-                exampleUrlElement.textContent = generateExampleURL();
-            }
         })();
 
-        // Additional utility functions
+        // Enhanced PDF Export Function with proper image handling
         function exportToPDF() {
-            alert('Export PDF memerlukan implementasi library PDF. Gunakan Print untuk saat ini.');
-            window.print();
-        }
-
-        function downloadWord() {
-            alert('Export Word memerlukan implementasi khusus. Gunakan Print atau copy content untuk saat ini.');
-        }
-
-        // Function to test with name parameters
-        function testWithNames() {
-            const baseUrl = window.location.origin + window.location.pathname;
-            const testUrl = `${baseUrl}?noOK=OK-2024-001&department=Maintenance&nama=John%20Doe&namaKerja=Perbaikan%20Mesin%20A&jenisKerja=Preventive&waktuKerja=2024-08-19%2008:00&rincianKerja=Penggantian%20bearing%20dan%20pembersihan%20komponen&koreksi=Diperlukan%20perbaikan%20segera&rootCause=Kurangnya%20maintenance%20rutin&correctiveAction=Implementasi%20jadwal%20maintenance%20berkala&targetSelesai=2024-08-20&actualSelesai=2024-08-19&status=Completed&check1=true&check2=true&check3=false&name1=Budi%20Santoso%20-%20Manager%20Maintenance&name2=Siti%20Rahma%20-%20Supervisor%20QC&name3=Ahmad%20Rahman%20-%20Teknisi%20Senior&name4=Maya%20Sari%20-%20Plant%20Manager&name5=Doni%20Pratama%20-%20Operator%20Produksi&image1=https://via.placeholder.com/400x300/0066cc/ffffff?text=Before&image2=https://via.placeholder.com/400x300/00cc66/ffffff?text=After&image3=https://via.placeholder.com/400x300/cc6600/ffffff?text=Process&image4=https://via.placeholder.com/400x300/cc0066/ffffff?text=Result`;
-            window.open(testUrl, '_blank');
-        }
-
-        // Function to copy example URL to clipboard
-        function copyExampleURL() {
-            const exampleUrl = document.getElementById('example-url').textContent;
+            const pdfBtn = document.getElementById('pdfBtn');
+            const originalText = pdfBtn.textContent;
             
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(exampleUrl).then(() => {
-                    alert('Example URL copied to clipboard!');
-                }).catch(() => {
-                    fallbackCopyTextToClipboard(exampleUrl);
+            pdfBtn.textContent = 'Preparing PDF...';
+            pdfBtn.disabled = true;
+            
+            // Wait for all images to load before proceeding
+            waitForImagesToLoad().then(() => {
+                // Hide buttons for clean print
+                const buttons = document.querySelector('.buttons');
+                buttons.style.display = 'none';
+                
+                // Apply print styles
+                document.body.classList.add('pdf-export-mode');
+                
+                // Force display of images for print
+                const images = document.querySelectorAll('.dynamic-image');
+                const bgContainers = document.querySelectorAll('.bg-image-container.has-bg-image');
+                
+                images.forEach(img => {
+                    if (img.src && img.complete && img.naturalHeight !== 0) {
+                        img.style.display = 'block !important';
+                        img.closest('.image-container').classList.add('has-image');
+                    }
                 });
-            } else {
-                fallbackCopyTextToClipboard(exampleUrl);
-            }
+                
+                bgContainers.forEach(container => {
+                    container.style.display = 'block !important';
+                });
+                
+                setTimeout(() => {
+                    pdfBtn.textContent = 'Ready to Export - Click OK';
+                    
+                    const instruction = confirm(
+                        'PDF Export Instructions:\n\n' +
+                        '1. The print dialog will open\n' +
+                        '2. Select "Save as PDF" or "Microsoft Print to PDF"\n' +
+                        '3. Make sure "More settings" shows:\n' +
+                        '   - Paper size: A4\n' +
+                        '   - Margins: Default\n' +
+                        '   - Options: Background graphics (checked)\n' +
+                        '4. Click "Save" and choose location\n\n' +
+                        'Images have been prepared for export.\n' +
+                        'Click OK to continue...'
+                    );
+                    
+                    if (instruction) {
+                        // Ensure all images are visible before printing
+                        setTimeout(() => {
+                            window.print();
+                        }, 500);
+                    }
+                    
+                    // Restore UI after print dialog
+                    setTimeout(() => {
+                        buttons.style.display = 'block';
+                        pdfBtn.disabled = false;
+                        pdfBtn.textContent = originalText;
+                        document.body.classList.remove('pdf-export-mode');
+                    }, 2000);
+                    
+                }, 500);
+            }).catch(error => {
+                console.error('Error waiting for images:', error);
+                // Proceed anyway
+                setTimeout(() => {
+                    window.print();
+                    buttons.style.display = 'block';
+                    pdfBtn.disabled = false;
+                    pdfBtn.textContent = originalText;
+                    document.body.classList.remove('pdf-export-mode');
+                }, 1000);
+            });
         }
-
-        // Fallback copy function
-        function fallbackCopyTextToClipboard(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.top = "0";
-            textArea.style.left = "0";
-            textArea.style.position = "fixed";
-            
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
+        
+        // Enhanced Alternative PDF export
+        function exportToPDFAlternative() {
             try {
-                document.execCommand('copy');
-                alert('Example URL copied to clipboard!');
-            } catch (err) {
-                console.error('Fallback: Oops, unable to copy', err);
-                alert('Unable to copy to clipboard. Please copy manually from the example URL field.');
+                // Wait for images to load first
+                waitForImagesToLoad().then(() => {
+                    const printWindow = window.open('', '_blank', 'width=1200,height=800');
+                    
+                    if (!printWindow) {
+                        alert('Pop-up blocked. Please allow pop-ups and try again.');
+                        return;
+                    }
+                    
+                    const printContent = document.getElementById('printArea').cloneNode(true);
+                    
+                    // Ensure images are properly set in the cloned content
+                    const originalImages = document.querySelectorAll('.dynamic-image');
+                    const clonedImages = printContent.querySelectorAll('.dynamic-image');
+                    
+                    originalImages.forEach((originalImg, index) => {
+                        if (clonedImages[index] && originalImg.src && originalImg.complete) {
+                            clonedImages[index].src = originalImg.src;
+                            clonedImages[index].style.display = 'block';
+                            clonedImages[index].closest('.image-container').classList.add('has-image');
+                        }
+                    });
+                    
+                    // Handle background images
+                    const originalBgContainers = document.querySelectorAll('.bg-image-container.has-bg-image');
+                    const clonedBgContainers = printContent.querySelectorAll('.bg-image-container');
+                    
+                    originalBgContainers.forEach((originalBg, index) => {
+                        if (clonedBgContainers[index]) {
+                            clonedBgContainers[index].style.backgroundImage = originalBg.style.backgroundImage;
+                            clonedBgContainers[index].classList.add('has-bg-image');
+                        }
+                    });
+                    
+                    const htmlContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Form Order Kerja - PT. DAGSAP ENDURA EATORE</title>
+                            <meta charset="UTF-8">
+                            <style>
+                                ${document.querySelector('style').textContent}
+                                
+                                body { 
+                                    background: white !important; 
+                                    font-family: Arial, sans-serif;
+                                    margin: 0;
+                                    padding: 15px;
+                                    -webkit-print-color-adjust: exact;
+                                    color-adjust: exact;
+                                }
+                                .container {
+                                    box-shadow: none !important;
+                                    max-width: none !important;
+                                    margin: 0 !important;
+                                    padding: 0 !important;
+                                    background: white !important;
+                                }
+                                .buttons { display: none !important; }
+                                
+                                /* Force image visibility */
+                                .dynamic-image {
+                                    display: block !important;
+                                    max-width: 100% !important;
+                                    max-height: 100% !important;
+                                }
+                                
+                                .bg-image-container.has-bg-image {
+                                    display: block !important;
+                                }
+                                
+                                @media print {
+                                    @page { 
+                                        size: A4; 
+                                        margin: 15mm; 
+                                    }
+                                    body { 
+                                        background: white !important; 
+                                        -webkit-print-color-adjust: exact !important;
+                                        color-adjust: exact !important;
+                                    }
+                                    .image-container {
+                                        page-break-inside: avoid !important;
+                                    }
+                                    .body-table tr {
+                                        page-break-inside: avoid !important;
+                                    }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${printContent.outerHTML}
+                            <script>
+                                window.onload = function() {
+                                    // Give extra time for images to load
+                                    setTimeout(function() {
+                                        console.log('Opening print dialog...');
+                                        window.print();
+                                        setTimeout(function() {
+                                            window.close();
+                                        }, 1000);
+                                    }, 1000);
+                                }
+                                
+                                // Log image load status
+                                document.querySelectorAll('img').forEach((img, index) => {
+                                    if (img.complete && img.naturalHeight !== 0) {
+                                        console.log('Image ' + index + ' loaded successfully');
+                                    } else {
+                                        console.log('Image ' + index + ' failed to load');
+                                    }
+                                });
+                            </script>
+                        </body>
+                        </html>
+                    `;
+                    
+                    printWindow.document.write(htmlContent);
+                    printWindow.document.close();
+                    
+                }).catch(error => {
+                    console.error('Alternative PDF export failed:', error);
+                    alert('Gagal memuat gambar. Menggunakan Print Form sebagai alternatif.');
+                    window.print();
+                });
+                
+            } catch (error) {
+                console.error('Alternative PDF export failed:', error);
+                alert('Gagal membuka window baru. Silakan gunakan Print Form.');
+                window.print();
             }
-            
-            document.body.removeChild(textArea);
         }
-
-        // Function to get all current form data as URL parameters
-        function getCurrentFormDataAsURL() {
-            const baseUrl = window.location.origin + window.location.pathname;
-            const currentParams = new URLSearchParams(window.location.search);
-            
-            console.log('Current Form Data URL:', `${baseUrl}?${currentParams.toString()}`);
-            return `${baseUrl}?${currentParams.toString()}`;
+        
+        // Enhanced helper function to wait for images to load
+        function waitForImagesToLoad() {
+            return new Promise((resolve) => {
+                const images = document.querySelectorAll('.dynamic-image');
+                const bgContainers = document.querySelectorAll('.bg-image-container');
+                let loadedCount = 0;
+                let totalToLoad = 0;
+                
+                // Count images that need to load
+                images.forEach(img => {
+                    if (img.src && img.src !== '') {
+                        totalToLoad++;
+                    }
+                });
+                
+                // Count background images that need to load
+                bgContainers.forEach(container => {
+                    if (container.style.backgroundImage && container.style.backgroundImage !== 'none' && container.style.backgroundImage !== '') {
+                        totalToLoad++;
+                    }
+                });
+                
+                if (totalToLoad === 0) {
+                    console.log('No images to load, proceeding...');
+                    resolve();
+                    return;
+                }
+                
+                const checkAllLoaded = () => {
+                    loadedCount++;
+                    console.log(`Loaded ${loadedCount}/${totalToLoad} images`);
+                    if (loadedCount >= totalToLoad) {
+                        console.log('All images loaded, proceeding...');
+                        resolve();
+                    }
+                };
+                
+                // Handle regular images
+                images.forEach(img => {
+                    if (img.src && img.src !== '') {
+                        if (img.complete && img.naturalHeight !== 0) {
+                            checkAllLoaded();
+                        } else {
+                            img.addEventListener('load', checkAllLoaded);
+                            img.addEventListener('error', checkAllLoaded);
+                        }
+                    }
+                });
+                
+                // Handle background images by creating test images
+                bgContainers.forEach(container => {
+                    const bgImage = container.style.backgroundImage;
+                    if (bgImage && bgImage !== 'none' && bgImage !== '') {
+                        const url = bgImage.slice(4, -1).replace(/"/g, "");
+                        const testImg = new Image();
+                        testImg.onload = checkAllLoaded;
+                        testImg.onerror = checkAllLoaded;
+                        testImg.src = url;
+                    }
+                });
+                
+                // Fallback timeout - don't wait forever
+                setTimeout(() => {
+                    console.log('Timeout reached, proceeding with PDF export...');
+                    resolve();
+                }, 5000);
+            });
         }
 
         // AppSheet Integration Helper Functions
         window.AppSheetHelpers = {
-            // Function to format name parameter for AppSheet
             formatNameParam: function(fullName, position) {
                 return `${fullName} - ${position}`;
             },
             
-            // Function to create URL with all parameters
             createFormURL: function(data) {
                 const baseUrl = window.location.origin + window.location.pathname;
                 const params = new URLSearchParams();
                 
-                // Add all possible parameters
                 Object.keys(data).forEach(key => {
                     if (data[key] !== null && data[key] !== undefined && data[key] !== '') {
                         params.append(key, data[key]);
@@ -960,7 +1131,6 @@
                 return `${baseUrl}?${params.toString()}`;
             },
             
-            // Function to validate name format
             validateNameFormat: function(nameString) {
                 const parts = nameString.split(' - ');
                 return parts.length >= 2 ? {
@@ -973,76 +1143,6 @@
                 };
             }
         };
-
-        // Log current form state for debugging
-        setTimeout(() => {
-            console.log('Form initialized with current parameters');
-            console.log('Current checkbox states:', {
-                check1: document.getElementById('check1')?.checked || false,
-                check2: document.getElementById('check2')?.checked || false,
-                check3: document.getElementById('check3')?.checked || false
-            });
-            console.log('Current name displays:', {
-                name1: document.getElementById('name1')?.innerHTML || '-',
-                name2: document.getElementById('name2')?.innerHTML || '-',
-                name3: document.getElementById('name3')?.innerHTML || '-',
-                name4: document.getElementById('name4')?.innerHTML || '-',
-                name5: document.getElementById('name5')?.innerHTML || '-'
-            });
-        }, 100);
-
-        // Add documentation for AppSheet developers
-        console.log(`
-=== APPSHEET INTEGRATION GUIDE ===
-
-URL Parameters untuk Form Order Kerja:
-
-BASIC DATA:
-- noOK: Nomor Order Kerja (contoh: OK-2024-001)
-- department: Departemen (contoh: Maintenance)
-- nama: Nama Penanggung Jawab
-- namaKerja: Nama Sifat Pekerjaan
-- jenisKerja: Jenis Pekerjaan (Preventive/Corrective/Emergency)
-- waktuKerja: Waktu Pengerjaan (format: YYYY-MM-DD HH:mm)
-- rincianKerja: Rincian detail pekerjaan
-- koreksi: Koreksi yang diperlukan
-- rootCause: Root Cause Analysis
-- correctiveAction: Corrective Action
-- targetSelesai: Target selesai (YYYY-MM-DD)
-- actualSelesai: Actual selesai (YYYY-MM-DD)
-- status: Status (Pending/In Progress/Completed)
-
-CHECKBOXES (true/false):
-- check1: Cek kebersihan mesin dan area mesin oleh QC
-- check2: Cek kelengkapan mesin dan kelengkapan alat
-- check3: Serah terima mesin oleh teknisi kepada operator
-
-SIGNATURES & NAMES (format: "Nama - Jabatan"):
-- name1: Diminta Oleh (contoh: "Budi Santoso - Manager Maintenance")
-- name2: Menyetujui (contoh: "Siti Rahma - Supervisor QC")
-- name3: Pelaksana (contoh: "Ahmad Rahman - Teknisi Senior")
-- name4: Diketahui (contoh: "Maya Sari - Plant Manager")
-- name5: Diterima Oleh (contoh: "Doni Pratama - Operator Produksi")
-
-LEGACY SIGNATURES (masih didukung):
-- sig1, sig2, sig3, sig4, sig5: Format sama dengan name1-name5
-
-IMAGES:
-- image1, image2, image3, image4: URL gambar atau format AppSheet
-
-CONTOH APPSHEET ACTION:
-LINKTOFORM("Form Order Kerja", 
-  "noOK", [No OK],
-  "department", [Department],
-  "nama", [Nama],
-  "name1", CONCATENATE([Nama Diminta], " - ", [Jabatan Diminta]),
-  "name2", CONCATENATE([Nama Setuju], " - ", [Jabatan Setuju]),
-  "check1", IF([Cek QC], "true", "false"),
-  "status", [Status Pekerjaan],
-  "image1", [Foto Before],
-  "image2", [Foto After]
-)
-        `);
     </script>
 </body>
 </html>
