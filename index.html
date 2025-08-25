@@ -184,7 +184,7 @@
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            display: block;
+            display: none;
         }
         .image-placeholder {
             color: #999;
@@ -195,6 +195,9 @@
         }
         .image-container.has-image .image-placeholder {
             display: none;
+        }
+        .image-container.has-image .dynamic-image {
+            display: block;
         }
         .image-container.loading::after {
             content: "Memuat gambar...";
@@ -247,15 +250,6 @@
             cursor: pointer;
             font-weight: normal;
             flex: 1;
-        }
-        .param-code {
-            background-color: #f8f9fa;
-            padding: 8px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 11px;
-            margin: 5px 0;
-            word-break: break-all;
         }
 
         /* Enhanced Print Styles for PDF Export */
@@ -313,6 +307,10 @@
                 display: block !important;
             }
             
+            .image-container.has-image .dynamic-image {
+                display: block !important;
+            }
+            
             .bg-image-container {
                 width: 350px !important;
                 height: 250px !important;
@@ -326,7 +324,6 @@
                 display: block !important;
             }
             
-            /* Ensure proper page layout */
             .table-title {
                 margin: 15px 0 10px 0 !important;
                 page-break-after: avoid;
@@ -337,7 +334,6 @@
                 margin-bottom: 15px !important;
             }
             
-            /* Image rows should not break */
             .body-table tr {
                 page-break-inside: avoid;
             }
@@ -352,7 +348,6 @@
             }
         }
 
-        /* PDF Export specific styles */
         .pdf-export-mode {
             background: white !important;
         }
@@ -532,7 +527,7 @@
                             <td class="field-name" style="width: 200px;">Lampiran Foto 1</td>
                             <td style="text-align: center; padding: 20px;">
                                 <div id="image1-container" class="image-container">
-                                    <img id="image1" class="dynamic-image" alt="Gambar 1" style="display: none;">
+                                    <img id="image1" class="dynamic-image" alt="Gambar 1">
                                     <div class="image-placeholder">Tidak ada gambar 1 tersedia</div>
                                 </div>
                                 <div id="image1-bg" class="bg-image-container">
@@ -544,7 +539,7 @@
                             <td class="field-name" style="width: 200px;">Lampiran Foto 2</td>
                             <td style="text-align: center; padding: 20px;">
                                 <div id="image2-container" class="image-container">
-                                    <img id="image2" class="dynamic-image" alt="Gambar 2" style="display: none;">
+                                    <img id="image2" class="dynamic-image" alt="Gambar 2">
                                     <div class="image-placeholder">Tidak ada gambar 2 tersedia</div>
                                 </div>
                                 <div id="image2-bg" class="bg-image-container">
@@ -565,7 +560,7 @@
                             <td class="field-name" style="width: 200px;">Foto Sudah Dikerjakan</td>
                             <td style="text-align: center; padding: 20px;">
                                 <div id="image3-container" class="image-container">
-                                    <img id="image3" class="dynamic-image" alt="Gambar 3" style="display: none;">
+                                    <img id="image3" class="dynamic-image" alt="Gambar 3">
                                     <div class="image-placeholder">Tidak ada gambar 3 tersedia</div>
                                 </div>
                                 <div id="image3-bg" class="bg-image-container">
@@ -577,7 +572,7 @@
                             <td class="field-name" style="width: 200px;">Foto Cek Kebersihan</td>
                             <td style="text-align: center; padding: 20px;">
                                 <div id="image4-container" class="image-container">
-                                    <img id="image4" class="dynamic-image" alt="Gambar 4" style="display: none;">
+                                    <img id="image4" class="dynamic-image" alt="Gambar 4">
                                     <div class="image-placeholder">Tidak ada gambar 4 tersedia</div>
                                 </div>
                                 <div id="image4-bg" class="bg-image-container">
@@ -599,10 +594,14 @@
     </div>
     
     <script>
+        // Main initialization function
         (function() {
-            const urlParams = new URLSearchParams(window.location.search);
+            console.log('Initializing form...');
             
-            // Get all parameters including name parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            console.log('URL parameters:', urlParams.toString());
+            
+            // Get all parameters
             const params = {
                 'image1': urlParams.get('image1') || '',
                 'image2': urlParams.get('image2') || '',
@@ -635,6 +634,8 @@
                 'name4': urlParams.get('name4') || '',
                 'name5': urlParams.get('name5') || ''
             };
+            
+            console.log('Processed parameters:', params);
 
             // Function to handle checkbox state
             function setupCheckbox(checkboxId, paramValue) {
@@ -686,7 +687,7 @@
                 }
             }
 
-            // Function to setup name display with priority: name parameter > sig parameter
+            // Function to setup name display
             function setupNameDisplay(nameId, nameParam, sigParam) {
                 const nameElement = document.getElementById(nameId);
                 
@@ -745,60 +746,56 @@
                 }
             }
 
-            // Enhanced function to handle image loading with better error handling
+            // Function to handle image loading - FIXED VERSION
             function setupImage(imageId, imageUrl) {
-                if (!imageUrl) return;
+                console.log(`Setting up image ${imageId} with URL:`, imageUrl);
+                
+                if (!imageUrl || imageUrl === '') {
+                    console.log(`No URL provided for ${imageId}`);
+                    return;
+                }
                 
                 const decodedUrl = decodeURIComponent(imageUrl);
                 const actualUrl = extractUrlFromAppSheetFormat(decodedUrl);
                 
-                if (!actualUrl) return;
+                console.log(`Processed URL for ${imageId}:`, actualUrl);
+                
+                if (!actualUrl || actualUrl === '') {
+                    console.log(`No valid URL found for ${imageId}`);
+                    return;
+                }
                 
                 const imgElement = document.getElementById(imageId);
                 const containerElement = document.getElementById(imageId + '-container');
                 const bgElement = document.getElementById(imageId + '-bg');
-                const placeholderElement = containerElement.querySelector('.image-placeholder');
                 
-                if (imgElement && containerElement) {
-                    containerElement.classList.add('loading');
-                    
-                    imgElement.onload = function() {
-                        containerElement.classList.remove('loading');
-                        containerElement.classList.add('has-image');
-                        imgElement.style.display = 'block';
-                        if (placeholderElement) {
-                            placeholderElement.style.display = 'none';
-                        }
-                        console.log(`Image ${imageId} loaded successfully`);
-                    };
-                    
-                    imgElement.onerror = function() {
-                        console.log(`Failed to load ${imageId}, trying background image`);
-                        containerElement.classList.remove('loading');
-                        
-                        if (bgElement) {
-                            bgElement.style.backgroundImage = `url('${actualUrl}')`;
-                            bgElement.classList.add('has-bg-image');
-                            containerElement.style.display = 'none';
-                            
-                            // Test if background image loads
-                            const testImg = new Image();
-                            testImg.onload = function() {
-                                console.log(`Background image ${imageId} loaded successfully`);
-                            };
-                            testImg.onerror = function() {
-                                console.log(`Both regular and background image failed for ${imageId}`);
-                                bgElement.classList.remove('has-bg-image');
-                                containerElement.style.display = 'flex';
-                            };
-                            testImg.src = actualUrl;
-                        }
-                    };
-                    
-                    // Set the image source
-                    imgElement.src = actualUrl;
-                    console.log(`Setting up image ${imageId} with URL: ${actualUrl.substring(0, 100)}...`);
+                if (!imgElement || !containerElement) {
+                    console.error(`Elements not found for ${imageId}`);
+                    return;
                 }
+                
+                containerElement.classList.add('loading');
+                
+                imgElement.onload = function() {
+                    console.log(`Image ${imageId} loaded successfully`);
+                    containerElement.classList.remove('loading');
+                    containerElement.classList.add('has-image');
+                };
+                
+                imgElement.onerror = function() {
+                    console.log(`Failed to load ${imageId}, trying background image`);
+                    containerElement.classList.remove('loading');
+                    
+                    if (bgElement) {
+                        bgElement.style.backgroundImage = `url('${actualUrl}')`;
+                        bgElement.classList.add('has-bg-image');
+                        containerElement.style.display = 'none';
+                        console.log(`Background image set for ${imageId}`);
+                    }
+                };
+                
+                // Set the image source
+                imgElement.src = actualUrl;
             }
 
             // Setup all images
@@ -828,9 +825,11 @@
                     }
                 }
             });
+            
+            console.log('Form initialization completed');
         })();
 
-        // Enhanced PDF Export Function with proper image handling
+        // Enhanced PDF Export Function
         function exportToPDF() {
             const pdfBtn = document.getElementById('pdfBtn');
             const originalText = pdfBtn.textContent;
@@ -838,79 +837,63 @@
             pdfBtn.textContent = 'Preparing PDF...';
             pdfBtn.disabled = true;
             
-            // Wait for all images to load before proceeding
+            // Wait for images to load
             waitForImagesToLoad().then(() => {
-                // Hide buttons for clean print
                 const buttons = document.querySelector('.buttons');
                 buttons.style.display = 'none';
-                
-                // Apply print styles
                 document.body.classList.add('pdf-export-mode');
                 
-                // Force display of images for print
+                // Force image visibility for print
                 const images = document.querySelectorAll('.dynamic-image');
                 const bgContainers = document.querySelectorAll('.bg-image-container.has-bg-image');
                 
                 images.forEach(img => {
                     if (img.src && img.complete && img.naturalHeight !== 0) {
-                        img.style.display = 'block !important';
-                        img.closest('.image-container').classList.add('has-image');
+                        img.parentElement.classList.add('has-image');
                     }
                 });
                 
-                bgContainers.forEach(container => {
-                    container.style.display = 'block !important';
-                });
-                
                 setTimeout(() => {
-                    pdfBtn.textContent = 'Ready to Export - Click OK';
+                    pdfBtn.textContent = 'Ready - Click OK to Export';
                     
                     const instruction = confirm(
-                        'PDF Export Instructions:\n\n' +
-                        '1. The print dialog will open\n' +
-                        '2. Select "Save as PDF" or "Microsoft Print to PDF"\n' +
-                        '3. Make sure "More settings" shows:\n' +
-                        '   - Paper size: A4\n' +
-                        '   - Margins: Default\n' +
-                        '   - Options: Background graphics (checked)\n' +
-                        '4. Click "Save" and choose location\n\n' +
-                        'Images have been prepared for export.\n' +
+                        'PDF Export Ready!\n\n' +
+                        '1. Print dialog will open\n' +
+                        '2. Choose "Save as PDF"\n' +
+                        '3. Ensure "Background graphics" is checked\n' +
+                        '4. Click Save\n\n' +
                         'Click OK to continue...'
                     );
                     
                     if (instruction) {
-                        // Ensure all images are visible before printing
                         setTimeout(() => {
                             window.print();
-                        }, 500);
+                        }, 200);
                     }
                     
-                    // Restore UI after print dialog
                     setTimeout(() => {
                         buttons.style.display = 'block';
                         pdfBtn.disabled = false;
                         pdfBtn.textContent = originalText;
                         document.body.classList.remove('pdf-export-mode');
-                    }, 2000);
+                    }, 1000);
                     
-                }, 500);
-            }).catch(error => {
-                console.error('Error waiting for images:', error);
-                // Proceed anyway
+                }, 300);
+            }).catch(() => {
+                // Fallback if images fail to load
                 setTimeout(() => {
                     window.print();
+                    const buttons = document.querySelector('.buttons');
                     buttons.style.display = 'block';
                     pdfBtn.disabled = false;
                     pdfBtn.textContent = originalText;
-                    document.body.classList.remove('pdf-export-mode');
-                }, 1000);
+                }, 500);
             });
         }
         
-        // Enhanced Alternative PDF export
+        // Alternative PDF export
         function exportToPDFAlternative() {
             try {
-                // Wait for images to load first
                 waitForImagesToLoad().then(() => {
                     const printWindow = window.open('', '_blank', 'width=1200,height=800');
                     
@@ -921,19 +904,18 @@
                     
                     const printContent = document.getElementById('printArea').cloneNode(true);
                     
-                    // Ensure images are properly set in the cloned content
+                    // Copy image states to cloned content
                     const originalImages = document.querySelectorAll('.dynamic-image');
                     const clonedImages = printContent.querySelectorAll('.dynamic-image');
                     
                     originalImages.forEach((originalImg, index) => {
                         if (clonedImages[index] && originalImg.src && originalImg.complete) {
                             clonedImages[index].src = originalImg.src;
-                            clonedImages[index].style.display = 'block';
-                            clonedImages[index].closest('.image-container').classList.add('has-image');
+                            clonedImages[index].parentElement.classList.add('has-image');
                         }
                     });
                     
-                    // Handle background images
+                    // Copy background images
                     const originalBgContainers = document.querySelectorAll('.bg-image-container.has-bg-image');
                     const clonedBgContainers = printContent.querySelectorAll('.bg-image-container');
                     
@@ -970,14 +952,7 @@
                                 }
                                 .buttons { display: none !important; }
                                 
-                                /* Force image visibility */
-                                .dynamic-image {
-                                    display: block !important;
-                                    max-width: 100% !important;
-                                    max-height: 100% !important;
-                                }
-                                
-                                .bg-image-container.has-bg-image {
+                                .has-image .dynamic-image {
                                     display: block !important;
                                 }
                                 
@@ -991,12 +966,6 @@
                                         -webkit-print-color-adjust: exact !important;
                                         color-adjust: exact !important;
                                     }
-                                    .image-container {
-                                        page-break-inside: avoid !important;
-                                    }
-                                    .body-table tr {
-                                        page-break-inside: avoid !important;
-                                    }
                                 }
                             </style>
                         </head>
@@ -1004,24 +973,13 @@
                             ${printContent.outerHTML}
                             <script>
                                 window.onload = function() {
-                                    // Give extra time for images to load
                                     setTimeout(function() {
-                                        console.log('Opening print dialog...');
                                         window.print();
                                         setTimeout(function() {
                                             window.close();
-                                        }, 1000);
-                                    }, 1000);
+                                        }, 500);
+                                    }, 800);
                                 }
-                                
-                                // Log image load status
-                                document.querySelectorAll('img').forEach((img, index) => {
-                                    if (img.complete && img.naturalHeight !== 0) {
-                                        console.log('Image ' + index + ' loaded successfully');
-                                    } else {
-                                        console.log('Image ' + index + ' failed to load');
-                                    }
-                                });
                             </script>
                         </body>
                         </html>
@@ -1030,10 +988,6 @@
                     printWindow.document.write(htmlContent);
                     printWindow.document.close();
                     
-                }).catch(error => {
-                    console.error('Alternative PDF export failed:', error);
-                    alert('Gagal memuat gambar. Menggunakan Print Form sebagai alternatif.');
-                    window.print();
                 });
                 
             } catch (error) {
@@ -1043,30 +997,22 @@
             }
         }
         
-        // Enhanced helper function to wait for images to load
+        // Helper function to wait for images to load
         function waitForImagesToLoad() {
             return new Promise((resolve) => {
                 const images = document.querySelectorAll('.dynamic-image');
-                const bgContainers = document.querySelectorAll('.bg-image-container');
                 let loadedCount = 0;
                 let totalToLoad = 0;
                 
-                // Count images that need to load
+                // Count images that have src
                 images.forEach(img => {
                     if (img.src && img.src !== '') {
                         totalToLoad++;
                     }
                 });
                 
-                // Count background images that need to load
-                bgContainers.forEach(container => {
-                    if (container.style.backgroundImage && container.style.backgroundImage !== 'none' && container.style.backgroundImage !== '') {
-                        totalToLoad++;
-                    }
-                });
-                
                 if (totalToLoad === 0) {
-                    console.log('No images to load, proceeding...');
+                    console.log('No images to load');
                     resolve();
                     return;
                 }
@@ -1075,15 +1021,13 @@
                     loadedCount++;
                     console.log(`Loaded ${loadedCount}/${totalToLoad} images`);
                     if (loadedCount >= totalToLoad) {
-                        console.log('All images loaded, proceeding...');
                         resolve();
                     }
                 };
                 
-                // Handle regular images
                 images.forEach(img => {
                     if (img.src && img.src !== '') {
-                        if (img.complete && img.naturalHeight !== 0) {
+                        if (img.complete) {
                             checkAllLoaded();
                         } else {
                             img.addEventListener('load', checkAllLoaded);
@@ -1092,23 +1036,11 @@
                     }
                 });
                 
-                // Handle background images by creating test images
-                bgContainers.forEach(container => {
-                    const bgImage = container.style.backgroundImage;
-                    if (bgImage && bgImage !== 'none' && bgImage !== '') {
-                        const url = bgImage.slice(4, -1).replace(/"/g, "");
-                        const testImg = new Image();
-                        testImg.onload = checkAllLoaded;
-                        testImg.onerror = checkAllLoaded;
-                        testImg.src = url;
-                    }
-                });
-                
-                // Fallback timeout - don't wait forever
+                // Timeout fallback
                 setTimeout(() => {
-                    console.log('Timeout reached, proceeding with PDF export...');
+                    console.log('Image loading timeout, proceeding...');
                     resolve();
-                }, 5000);
+                }, 3000);
             });
         }
 
